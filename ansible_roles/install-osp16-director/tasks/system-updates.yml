@@ -1,0 +1,84 @@
+---
+- name: 'Remove the cloud-init rpm from the image before applying updates'
+  ansible.builtin.dnf:
+    name: cloud-init
+    state: absent
+  tags:
+    - system_updates
+
+- name: 'Update all installed packages'
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: is_updated
+  until: is_updated is succeeded
+  retries: 10
+  delay: 5
+  tags:
+    - system_updates
+
+- name: 'Set the container-tools repository module to version 3.0'
+  ansible.builtin.shell: |
+     sudo dnf module -y reset container-tools
+     dnf module enable -y container-tools:3.0
+  retries: 10
+  tags: 
+    - undercloud_config
+
+- name: 'Activating needed dnf modules if using TLS-E'
+  ansible.builtin.shell: |
+     dnf module enable -y pki-deps
+  retries: 10
+  when: enable_tls_everywhere == True
+  tags: 
+    - undercloud_config
+
+- name: 'Installing rpm dependencies for TLS-E'
+  ansible.builtin.dnf:
+    name: '{{ tls_everywhere_rpm_deps }}'
+    state: installed
+    update_cache: yes
+  register: result
+  when: enable_tls_everywhere == true
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  tags: 
+    - system_updates
+
+- name: 'Installing tripleo packages'
+  ansible.builtin.dnf:
+    name: '{{ rhsm_rpm_packages }}'
+    state: installed
+    update_cache: yes
+  register: result
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  tags: 
+    - system_updates
+
+- name: 'Reboot after updates'
+  ansible.builtin.shell: | 
+    sleep 5 && systemctl reboot
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: 
+    - is_updated is changed
+    - reboot_after_updates == true
+  tags:
+    - system_updates
+
+- name: 'Wait for host to become responsive after reboot'
+  wait_for_connection:
+    connect_timeout: 30
+    sleep: 5
+    delay: 60
+    timeout: 300 
+  when: 
+    - is_updated is changed
+    - reboot_after_updates == true
+  tags:
+    - system_updates

@@ -1,0 +1,8 @@
+---
+kvm_host:
+  hosts:
+    kvm1.voltron.xyz
+
+kvm_host_ocp:
+  hosts:
+    kvm-virt-labocp.voltron.xyz

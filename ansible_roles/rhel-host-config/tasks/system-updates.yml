@@ -1,0 +1,53 @@
+---
+- name: Remove the cloud-init rpm from the host before applying updates
+  ansible.builtin.dnf:
+    name: cloud-init
+    state: absent
+  when: 
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates
+
+- name: Update all installed packages
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: is_updated
+  until: is_updated is succeeded
+  retries: 10
+  delay: 5
+  when: 
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates
+
+- name: Reboot after updates
+  ansible.builtin.shell: > 
+    sleep 5 && systemctl reboot
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: 
+    - is_updated is changed
+    - reboot_after_updates == True
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates
+
+- name: Wait for host to become responsive after reboot
+  ansible.builtin.wait_for_connection:
+    connect_timeout: 30
+    sleep: 5
+    delay: 60
+    timeout: 300 
+  when: 
+    - is_updated is changed
+    - reboot_after_updates == True
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates

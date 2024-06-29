@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+# extra network interface
+auto {{ item.ifname }}
+allow-hotplug {{ item.ifname }}
+iface {{ item.ifname }}
+  address {{ item.ip }}  
+  netmask {{ item.netmask }}
+  mtu {{ item.ifmtu | default('1500') }}
+

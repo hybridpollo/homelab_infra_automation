@@ -1,0 +1,38 @@
+---
+- name: Configure the chrony ntp client from ansible template
+  ansible.builtin.template:
+    src: templates/chrony_server.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0440
+  notify: 
+     - restart_chrony 
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: base_services
+
+- name: Configure the sshd server from ansible template
+  ansible.builtin.template:
+    src: templates/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0600
+  notify: 
+     - restart_sshd
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: base_services
+
+- name: 'Ensure base services started.'
+  ansible.builtin.service: 
+    name: '{{ item }}'
+    state: started
+    enabled: true 
+  loop:
+    - chronyd
+    - sshd
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: base_services

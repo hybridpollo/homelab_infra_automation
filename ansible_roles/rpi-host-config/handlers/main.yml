@@ -1,0 +1,17 @@
+---
+- name: restart_chrony
+  service:
+     name: chronyd
+     state: restarted 
+   
+- name: restart_dhcpcd
+  service:
+    name: dhcpcd
+    state: restarted
+
+- name: restart_sshd
+  service:
+    name: ssh
+    state: restarted
+
+

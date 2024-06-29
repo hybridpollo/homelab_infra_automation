@@ -1,0 +1,106 @@
+---
+- name: 'Generate undercloud.conf from template to {{ undercloud_home_path}}/{{ osp_templates_download_directory_name }}/undercloud'
+  ansible.builtin.template:
+    src: undercloud.conf.j2
+    dest: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud.conf'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+    mode: 0644
+  register: uc_conf_gen 
+  tags: 
+    - undercloud_config
+
+- name: 'Configuring the container image preparation file from template'
+  ansible.builtin.template:
+    src: container_image_prepare.yml.j2
+    dest: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/container_image_prepare.yml'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+    mode: 0644
+  register: uc_container_images_file_gen
+  tags: 
+    - undercloud_config
+
+- name: 'Configuring the undercloud custom parameters file from template'
+  ansible.builtin.template:
+    src: undercloud_custom_env.yml.j2
+    dest: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud_custom_env.yml'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+    mode: 0644
+  when: undercloud_enable_custom_environment_file == true
+  tags: 
+    - undercloud_config
+  
+- name: 'Check for {{ undercloud_home_path }}/ipa_otp file prior to generation if using TLS Everywhere'
+  ansible.builtin.stat:
+    path: '{{ undercloud_home_path }}/ipa_otp'
+  when: enable_tls_everywhere == True
+  register: otp_file
+  tags: undercloud_config
+
+- name: 'Halt the installation if file {{ undercloud_home_path }}/ipa_otp exists'
+  ansible.builtin.fail:
+    msg: 'WARNING: File: {{ undercloud_home_path }}/ipa_otp exists. This host may have already join the IDM Domain. Manual intervention suggested.'
+  when:
+    - enable_tls_everywhere == True
+    - otp_file.stat.exists == True
+  tags: undercloud_config
+
+- name: 'Generate the OTP password used for novajoin if using TLS Everywhere'
+  ansible.builtin.shell: |
+    /usr/libexec/novajoin-ipa-setup \
+    --principal '{{ idm_user_principal }}' \
+    --password '{{ idm_password }}' \
+    --server '{{ idm_server }}' \
+    --realm '{{ idm_realm }}' \
+    --domain '{{ idm_domain }}' \
+    --hostname '{{ undercloud_short_hostname}}.{{ domain }}' \
+    --precreate | tee '{{ undercloud_home_path }}/ipa_otp'
+  when: 
+    - enable_tls_everywhere == True
+    - otp_file.stat.exists == False
+  register: otp
+  become: yes
+  become_user: stack
+  tags: undercloud_config
+
+- name: 'Update the ipa_otp parameter in {{ undercloud_home_path }}/undercloud.conf'
+  ansible.builtin.lineinfile:
+    path: '{{ undercloud_home_path }}/undercloud.conf'
+    regexp: '^.*ipa_otp.*'
+    line: 'ipa_otp = {{ otp.stdout }}'
+  when: 
+    - enable_tls_everywhere == True
+    - otp_file.stat.exists == False or otp.changed
+  tags: undercloud_config
+
+- name: 'Symlink the undercloud.conf from git repository to {{ undercloud_home_path }}/undercloud.conf'
+  ansible.builtin.file:
+    src: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud.conf'
+    dest: '{{ undercloud_home_path }}/undercloud.conf'
+    state: link
+    force: true
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+
+- name: 'Symlink the container_image_prepare.yml from git repository to {{ undercloud_home_path }}/container_image_prepare.yml'
+  ansible.builtin.file:
+    src: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/container_image_prepare.yml'
+    dest: '{{ undercloud_home_path }}/container_image_prepare.yml'
+    state: link
+    force: true
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+
+- name: 'Symlink the undercloud_custom_env.yml file from git repository to {{ undercloud_home_path }}/undercloud_custom_env.yml'
+  ansible.builtin.file:
+    src: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud_custom_env.yml'
+    dest: '{{ undercloud_home_path }}/undercloud_custom_env.yml'
+    state: link
+    force: true
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+  when: undercloud_enable_custom_environment_file == true
+  tags: 
+    - undercloud_config

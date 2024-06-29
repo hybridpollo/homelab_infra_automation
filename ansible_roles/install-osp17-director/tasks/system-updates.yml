@@ -1,0 +1,68 @@
+---
+- name: 'Remove the cloud-init rpm from the image before applying updates'
+  ansible.builtin.dnf:
+    name: cloud-init
+    state: absent
+  tags:
+    - system_updates
+
+- name: 'Update all installed packages'
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: is_updated
+  until: is_updated is succeeded
+  retries: 10
+  delay: 5
+  tags:
+    - system_updates
+
+- name: 'Installing rpm dependencies for TLS-E'
+  ansible.builtin.dnf:
+    name: '{{ tls_everywhere_rpm_deps }}'
+    state: installed
+    update_cache: yes
+  register: result
+  when: enable_tls_everywhere == true
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  tags: 
+    - system_updates
+
+- name: 'Installing tripleo packages'
+  ansible.builtin.dnf:
+    name: '{{ rhsm_rpm_packages }}'
+    state: installed
+    update_cache: yes
+  register: result
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  tags: 
+    - system_updates
+
+- name: 'Reboot after updates'
+  ansible.builtin.shell: | 
+    sleep 5 && systemctl reboot
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: 
+    - is_updated is changed
+    - reboot_after_updates == true
+  tags:
+    - system_updates
+
+- name: 'Wait for host to become responsive after reboot'
+  ansible.builtin.wait_for_connection:
+    connect_timeout: 30
+    sleep: 5
+    delay: 60
+    timeout: 300 
+  when: 
+    - is_updated is changed
+    - reboot_after_updates == true
+  tags:
+    - system_updates

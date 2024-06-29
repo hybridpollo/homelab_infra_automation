@@ -1,0 +1,5 @@
+---
+- include_tasks: base-system.yml 
+- include_tasks: system-updates.yml
+- include_tasks: base-services.yml 
+- include_tasks: configure-plex-services.yml

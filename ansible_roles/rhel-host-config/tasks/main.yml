@@ -1,0 +1,6 @@
+---
+# tasks file for rhel-host-config
+- include_tasks: base-system.yml 
+- include_tasks: rhsm-register.yml 
+- include_tasks: system-updates.yml
+- include_tasks: base-services.yml

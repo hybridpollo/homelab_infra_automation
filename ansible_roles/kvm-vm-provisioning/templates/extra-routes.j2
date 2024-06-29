@@ -1,0 +1,4 @@
+# {{ ansible_managed }} 
+{% for i in vm_extra_routes %}
+{{ item.network}} via {{ item.nexthop}}
+{% endfor %}

@@ -1,0 +1,12 @@
+# {{ ansible_managed }} 
+# the primary network interface
+auto {{ vm_if_dev }}
+iface {{ vm_if_dev }} inet static
+  address {{ vm_if_addr }}  
+  netmask {{ vm_if_netmask }}
+  gateway {{ vm_if_gateway }}
+  mtu {{ vm_if_mtu | default('1500') }}
+
+# load additional network interface configurations
+source /etc/network/interfaces.d/*
+

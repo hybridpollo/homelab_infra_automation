@@ -1,0 +1,15 @@
+---
+- hosts: kvm_host_ocp
+  become: True
+  vars_files:
+    - vars/libvirt-ocp-lb.yml
+    - vars/vaulted/libvirt-ocp-lb.yml
+  tasks:
+    - name:  Importing kvm-vm-provisioning role for deployment of an OCP load balancer virtual machine
+      import_role: 
+        name: kvm-vm-provisioning
+      tags:
+        - create_vm
+        - delete_vm
+        - fetch_kvm_images
+

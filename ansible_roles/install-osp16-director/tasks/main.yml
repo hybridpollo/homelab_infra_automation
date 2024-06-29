@@ -1,0 +1,11 @@
+---
+# tasks file for install-osp16-director
+- include_tasks: base-system.yml 
+- include_tasks: rhsm-register.yml
+- include_tasks: system-updates.yml
+- include_tasks: base-services.yml
+- include_tasks: fetch-git-templates.yml
+  when: enable_git_clone == True
+- include_tasks: undercloud-prepare.yml
+- include_tasks: undercloud-install.yml
+- include_tasks: undercloud-post-install.yml

@@ -1,0 +1,5 @@
+# {{ ansible_managed }} 
+domain {{ vm_base_domain | default("voltron.xyz") }}
+search {{ vm_base_domain | default("voltron.xyz") }}
+nameserver {{ vm_if_dns1 }}
+nameserver {{ vm_if_dns2 }}

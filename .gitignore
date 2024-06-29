@@ -1,0 +1,5 @@
+# gitignore
+.git
+*.retry
+*.log
+*.zip

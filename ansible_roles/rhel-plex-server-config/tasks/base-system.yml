@@ -1,0 +1,56 @@
+---
+- name: 'Setting the system hostname'
+  ansible.builtin.hostname:
+    name: '{{ base_hostname }}'
+  tags:
+    - base_system
+  
+- name: 'Setting the root password for system'
+  ansible.builtin.user:
+    name: root
+    password: '{{ root_pass | password_hash("sha512") }}'
+    update_password: always
+    state: present
+  tags:
+    - base_system
+ 
+- name: 'Ensuring sudo group is present on host'
+  ansible.builtin.group:
+     name: '{{ sudo_group }}'
+     state: present
+  tags:
+    - base_system
+
+- name: 'Setting the base users'
+  ansible.builtin.user: 
+    name: '{{ item.user_name }}'
+    uid: '{{ item.uid }}'
+    groups: '{{ sudo_group }}'
+    append: yes
+    shell: /bin/bash
+    password: '{{ user_pass | password_hash("sha512") }}'
+    update_password: on_create
+    state: present 
+  loop: '{{ user_list }}'
+  tags:
+    - base_system
+
+- name: 'Ensuring /etc/sudoers.d directory exists'
+  ansible.builtin.file: 
+     path: /etc/sudoers.d
+     state: directory
+     owner: root
+     group: root
+     mode: 0750
+  tags:
+    - base_system
+
+- name: 'Copy sudoers configuration file from template'
+  ansible.builtin.template: 
+     src: templates/extra-sudo-users.j2
+     dest: /etc/sudoers.d/extra-sudo-users
+     owner: root
+     group: root
+     mode: 0440
+  tags:
+    - base_system
