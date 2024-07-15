@@ -27,6 +27,9 @@ unbound_forward_zones:
   - name: acanorex.io
     dns_addr_1: 8.8.8.8
     dns_addr_2: 8.8.4.4
+  - name: lab.acanorex.io
+    dns_addr_1: 172.25.49.254
+    dns_addr_2: ''
   - name: 16.172.in-addr.arpa
     dns_addr_1: 172.25.49.254
     dns_addr_2: ''
@@ -44,6 +47,7 @@ dns_private_domains:
   - voltron.xyz
   - bertoknows.com
   - acanorex.io
+  - lab.acanorex.io
   - 16.172.in-addr.arpa
   - 25.172.in-addr.arpa
   - 29.172.in-addr.arpa
