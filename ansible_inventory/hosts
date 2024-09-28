@@ -4,9 +4,8 @@
 # Raspberry pi host groups
 # Purposes:
 #   - ssh jump server / bastion 
+#   - nsd authoritative dns server for lab networks
 #   - unbound dns caching server for dns caching.
-#     unbound also forwards internal/private dns domains 
-#     to an intance of Red Hat IDM, also hosted in this repo
 #
 rpi_hosts:
   hosts:
@@ -17,7 +16,7 @@ rpi_hosts:
       ansible_host: 172.25.49.253
       base_hostname: cachens
 
-dns_caching_hosts:
+dns_infra_hosts:
   hosts:
     cachens.voltron.xyz:
       ansible_host: 172.25.49.253

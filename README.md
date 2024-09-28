@@ -13,36 +13,40 @@ __playbooks_vm_provisioning__ -> Playbooks used to deploy kvm/libvirt virtual ma
 __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructure for a Red Hat OpenStack Platform 16 or 17 home lab deployment. 
 
 ```
-├── LICENSE
-├── README.md
 ├── ansible.cfg
 ├── ansible_inventory
 │   └── hosts
 ├── ansible_roles
+│   ├── install-osp16-director
+│   ├── install-osp17-director
 │   ├── kvm-vm-provisioning
+│   ├── lab-dns-infra
 │   ├── rhel-host-config
 │   ├── rhel-plex-server-config
-│   ├── rpi-host-config
-│   └── unbound-cache-server-config
+│   └── rpi-host-config
 ├── ansible_vault
 │   └── vaulted-vars.yml
+├── LICENSE
 ├── playbooks_base_infrastructure
 │   ├── configure-base-infrastructure-rhel-hosts.yml
 │   ├── configure-base-infrastructure-rpi-hosts.yml
+│   └── vars
+├── playbooks_kolla_ansible_openstack
+│   ├── deploy-director-software-osp17.yml
+│   ├── deploy-kvm-rocky-9-single-node.yml
 │   └── vars
 ├── playbooks_plex_server
 │   ├── configure-plex-vm.yml
 │   ├── deploy-plex-vm.yml
 │   └── vars
 ├── playbooks_rh_openstack
-│   ├── ansible-openstack-kvm-controller
+│   ├── deploy-director-software-osp16.yml
+│   ├── deploy-director-software-osp17.yml
+│   ├── deploy-kvm-openstack-controller-vm.yml
 │   ├── deploy-kvm-osp16-director-vm.yml
 │   ├── deploy-kvm-osp17-director-vm.yml
-│   ├── vars
-│   ├── wip_deploy-director-software-osp16.yml
-│   └── wip_deploy-director-software-osp17.yml
+│   └── vars
 ├── playbooks_vm_provisioning
-│   ├── README.md
 │   ├── deploy-centos-7-vm.yml
 │   ├── deploy-centos-8-streams-vm.yml
 │   ├── deploy-centos-9-streams-vm.yml
@@ -53,7 +57,9 @@ __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructu
 │   ├── deploy-rhel-7-7.vm.yml
 │   ├── deploy-rhel-8-vm.yml
 │   ├── inventory
+│   ├── README.md
 │   └── vars
+├── README.md
 └── repo_assets
     └── diagrams
 ```

@@ -10,12 +10,12 @@
   tags:
     - rpi_host_config 
 
-- name: 'Configuring the unbound dns caching and resolver service on host'
-  hosts: dns_caching_hosts
+- name: 'Configuring the dns infra services on host'
+  hosts: dns_infra_hosts
   tasks:
     - name: 'Importing the roles needed for this play...'
       ansible.builtin.import_role:
-        name: unbound-cache-server-config
+        name: lab-dns-infra
   vars_files:
     - vars/vaulted/vaulted-vars.yml
   tags:
