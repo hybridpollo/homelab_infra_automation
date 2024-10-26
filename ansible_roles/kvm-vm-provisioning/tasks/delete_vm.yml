@@ -14,7 +14,8 @@
     - delete_vm
 
 - name: '[ON VM DELETE] Retreive state of virtual machine: {{ vm_fqdn_name }} before deletion.'
-  ansible.builtin.shell: 'virsh domstate {{ vm_fqdn_name}}'
+  ansible.builtin.shell: |
+    virsh domstate '{{ vm_fqdn_name}}'
   register: vm_current_state
   ignore_errors: true
   args:
@@ -23,7 +24,8 @@
     - delete_vm
 
 - name: '[ON VM DELETE] Stopping virtual machine: {{ vm_fqdn_name }} prior to deletion.'
-  ansible.builtin.shell: "virsh destroy {{ vm_fqdn_name}}"
+  ansible.builtin.shell: |
+    virsh destroy '{{ vm_fqdn_name}}'
   args:
    executable: /bin/bash
   when: 
@@ -32,7 +34,8 @@
     - delete_vm
 
 - name: '[ON VM DELETE] Retreive state of virtual machine: {{ vm_fqdn_name }} after stopping.'
-  ansible.builtin.shell: 'virsh domstate {{ vm_fqdn_name }}'
+  ansible.builtin.shell: |
+    virsh domstate '{{ vm_fqdn_name }}'
   register: vm_current_state
   ignore_errors: true
   args:
@@ -41,11 +44,11 @@
     - delete_vm
 
 - name: '[ON VM DELETE] Deleting virtual machine: {{ vm_fqdn_name }}'
-  ansible.builtin.shell: 'virsh undefine --remove-all-storage {{ vm_fqdn_name }}'
+  ansible.builtin.shell: |
+    virsh undefine --remove-all-storage '{{ vm_fqdn_name }}'
   args:
    executable: /bin/bash
   when: 
     - 'vm_current_state.stdout == "shut off"'
   tags:
     - delete_vm
-

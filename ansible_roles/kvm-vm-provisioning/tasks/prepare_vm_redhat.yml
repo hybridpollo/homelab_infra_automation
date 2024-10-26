@@ -83,7 +83,7 @@
     uuidgen
   register: generated_uuid
   when: 
-    - vm_if_configure_ip == True
+    - vm_configure_extra_if == True
     - vm_os_family == 'redhat'
     - ansible_distribution_major_version|int >= 8
   tags:
@@ -93,7 +93,7 @@
   set_fact:
     vm_if_uuid: '{{ generated_uuid.stdout }}'
   when: 
-    - vm_if_configure_ip == True
+    - vm_configure_extra_if == True
     - vm_os_family == 'redhat'
     - ansible_distribution_major_version|int >= 8
   tags:
@@ -108,7 +108,7 @@
     group: root
   loop: '{{ vm_extra_if_dev }}'
   when: 
-    - vm_enable_extra_nics == True
+    - vm_configure_extra_if == True
     - vm_os_family == 'redhat'
     - ansible_distribution_major_version|int >= 8
   tags:
@@ -129,7 +129,7 @@
 
 - name: '[Red Hat VM] Preparing root disk for {{ vm_base_name }}'
   ansible.builtin.shell: |
-      qemu-img create -f qcow2 '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' '{{ vm_root_disk_gb }}G'
+    qemu-img create -f qcow2 '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' '{{ vm_root_disk_gb }}G'
   args:
     executable: /bin/bash
   when: 
@@ -139,9 +139,9 @@
 
 - name: '[Red Hat VM] Resizing root disk to {{ vm_root_disk_gb }}GB for {{ vm_base_name }}'
   ansible.builtin.shell: |
-      export LIBGUESTFS_BACKEND=direct ;
-      virt-resize --expand '{{ vm_root_disk_partition }}' \
-      '{{ vm_base_src_disk_path }}/{{ vm_base_src_image }}' '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}'
+    export LIBGUESTFS_BACKEND=direct ;
+    virt-resize --expand '{{ vm_root_disk_partition }}' \
+    '{{ vm_base_src_disk_path }}/{{ vm_base_src_image }}' '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}'
   args:
     executable: /bin/bash
   when: 
@@ -151,22 +151,22 @@
 
 - name: '[Red Hat 8|9 VM] Perform initial customizations for virtual machine {{ vm_base_name }}'
   ansible.builtin.shell: |
-      export LIBGUESTFS_BACKEND=direct;
-      virt-customize -q \
-      -a '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
-      --hostname "{{ vm_fqdn_name }}" \
-      {% if vm_portal_registration_enable is sameas true %}
-      --sm-register \
-      --sm-credentials '{{ vm_portal_user }}:password:{{ vm_portal_pw }}' \
-      --sm-attach pool:'{{ vm_portal_pool}}' \
-      --install lvm2 \ 
-      --sm-unregister \ 
-      {%endif %}
-      --uninstall cloud-init \
-      --root-password 'password:{{ vm_root_pw }}' \
-      --ssh-inject 'root:file:/tmp/vm_root_pub_key' \
-      --selinux-relabel \
-      --run-command 'rm -f /etc/NetworkManager/system-connections/* ; rm -f /etc/sysconfig/network-scripts/ifcfg-*' 
+    export LIBGUESTFS_BACKEND=direct;
+    virt-customize -q \
+    -a '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
+    --hostname "{{ vm_fqdn_name }}" \
+    {% if vm_portal_registration_enable is sameas true %}
+    --sm-register \
+    --sm-credentials '{{ vm_portal_user }}:password:{{ vm_portal_pw }}' \
+    --sm-attach pool:'{{ vm_portal_pool}}' \
+    --install lvm2 \ 
+    --sm-unregister \ 
+    {%endif %}
+    --uninstall cloud-init \
+    --root-password 'password:{{ vm_root_pw }}' \
+    --ssh-inject 'root:file:/tmp/vm_root_pub_key' \
+    --selinux-relabel \
+    --run-command 'rm -f /etc/NetworkManager/system-connections/* ; rm -f /etc/sysconfig/network-scripts/ifcfg-*' 
   args:
     executable: /bin/bash
   when: 
@@ -177,20 +177,20 @@
 
 - name: '[Red Hat 8|9 VM] Perform network customizations for virtual machine {{ vm_base_name }}'
   ansible.builtin.shell: |
-      export LIBGUESTFS_BACKEND=direct;
-      virt-customize -q \
-      -a '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
-      --no-network \
-      --copy-in /tmp/NetworkManager.conf:/etc/NetworkManager \
-      {% if vm_if_configure_ip is sameas true %}
-      --copy-in /tmp/{{ vm_if_dev }}.nmconnection:/etc/NetworkManager/system-connections \
-      {%endif %}
-      {% if vm_enable_extra_nics is sameas true %}
-      {% for i in vm_extra_if_dev %}
-      --copy-in /tmp/{{ i.vm_if_dev }}.nmconnection:/etc/NetworkManager/system-connections \
-      {% endfor %}
-      {%endif %}
-      --selinux-relabel
+    export LIBGUESTFS_BACKEND=direct;
+    virt-customize -q \
+    -a '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
+    --no-network \
+    --copy-in /tmp/NetworkManager.conf:/etc/NetworkManager \
+    {% if vm_if_configure_ip is sameas true %}
+    --copy-in /tmp/{{ vm_if_dev }}.nmconnection:/etc/NetworkManager/system-connections \
+    {%endif %}
+    {% if vm_enable_extra_nics is sameas true %}
+    {% for i in vm_extra_if_dev %}
+    --copy-in /tmp/{{ i.vm_if_dev }}.nmconnection:/etc/NetworkManager/system-connections \
+    {% endfor %}
+    {%endif %}
+    --selinux-relabel
   args:
     executable: /bin/bash
   when: 

@@ -42,7 +42,7 @@ vm_if_mtu: 1500
 # eth1 = external api which has a mtu 9000 on the 
 # bridge interface on the hypervisor
 # 
-vm_enable_extra_nics: false
+vm_configure_extra_if: false
 vm_extra_if_dev:
   - vm_if_dev: eth1
     vm_if_addr: 1.1.1.1
