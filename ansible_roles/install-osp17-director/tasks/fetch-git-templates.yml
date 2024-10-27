@@ -1,6 +1,6 @@
 ---
 - name: 'Create templates and image directories in {{ undercloud_home_path }}'
-  file:
+  ansible.builtin.file:
     path: '{{ undercloud_home_path }}/{{ item }}'
     owner: '{{ undercloud_user }}'
     group: '{{ undercloud_group }}'
@@ -11,7 +11,7 @@
     - undercloud_config
 
 - name: 'Ensure the {{ undercloud_home_path }}/.ssh directory exists'
-  file:
+  ansible.builtin.file:
     path: '{{ undercloud_home_path }}/.ssh'
     state: directory
     owner: '{{ undercloud_user }}'
