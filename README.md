@@ -74,7 +74,7 @@ One last remark; The RHEL KVM nodes are standalone RHEL hosts and there is no cl
 
 I hope this is helpful and if any questions, you can always email at berto@acanorex.io. 
 
-![alt text](https://raw.githubusercontent.com/hybridpollo/homelab_infra_automation/main/repo_assets/diagrams/home_lab_diagram.png "Home Lab Diagram Rev 0.1")
+![alt text](https://raw.githubusercontent.com/hybridpollo/homelab_infra_automation/main/repo_assets/diagrams/home_lab_diagram_with_border.png "Home Lab Diagram Rev 0.5")
 
 ### Use of contents of this repository
 You are welcome to copy, fork, ridicule any of the contents of this repository but do not expect any support for any of the code found in this repository. 
