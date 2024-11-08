@@ -7,7 +7,7 @@
 # 
 vm_boot_on_create: false
 vm_base_name: osp-ctrl01
-vm_fqdn_name: osp-ctrl01.voltron.xyz
+vm_fqdn_name: osp-ctrl01.lab.acanorex.io
 
 # these variable has been vaulted
 # vm_root_pw:

@@ -1,6 +1,6 @@
 ---
 # default  vars file for install-osp16-director
-domain: voltron.xyz
+domain: lab.acanorex.io
 sudo_group: wheel
 time_servers:
    - clock.nyc.he.net

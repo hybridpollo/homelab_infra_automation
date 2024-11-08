@@ -111,6 +111,6 @@ plex_hosts:
 #
 director_server:
   hosts:
-     osp-dir.voltron.xyz:
+     osp-dir.lab.acanorex.io:
        ansible_host: 172.25.48.10
        ansible_user: root
