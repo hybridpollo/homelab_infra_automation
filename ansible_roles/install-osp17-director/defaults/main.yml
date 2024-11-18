@@ -5,6 +5,7 @@ sudo_group: wheel
 time_servers:
    - clock.nyc.he.net
    - clock.fmt.he.net
+time_zone: America/Chicago
 local_user_list:
   - user_name: stack 
     uid: 1001 
