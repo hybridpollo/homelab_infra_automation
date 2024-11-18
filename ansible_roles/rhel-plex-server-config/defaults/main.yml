@@ -3,25 +3,20 @@
 # this are currently defined in the playbook
 # domain:
 # base_hostname: 
-
 sudo_group: sudo
-
 time_servers:
    - clock.nyc.he.net
    - clock.fmt.he.net
-
+time_zone: America/Chicago
 user_list:
   - user_name: arlaporte
     uid: 1001
-
 group_list:
   - group_name: sudo
     gid: 27
   - group_name: arlaporte 
     gid: 1001
-
 reboot_after_updates: true
-
 rhel_pkgs_to_install:
   - openssh-clients
   - openssh-server
@@ -37,12 +32,10 @@ rhel_pkgs_to_install:
   - epel-release
   - bind-utils
   - ipa-client
-
 rhel_pkgs_to_remove:
   - postfix
   - ntpd
   - cloud-init
-  
 base_services:
   - chronyd
   - sshd
@@ -58,7 +51,6 @@ pms_allowed_local_networks:
   - network: 192.168.10.0
     netmask: 255.255.255.0
 # THIS IS WORK IN PROGRESS
-
 pms_ports:
   - proto: tcp
     port: 32400
@@ -82,7 +74,6 @@ pms_ports:
     port: 32413
   - proto: udp
     port: 32414
-
 ### nfs options
 nfs_enabled: yes
 nfs_dst_path: /mnt/plex_data

@@ -4,6 +4,11 @@
     name: '{{ base_hostname }}.{{domain}}'
   when: ansible_os_family == 'Debian'
 
+- name: 'Set the system time zone'
+  community.general.timezone:
+    name: '{{ time_zone }}'
+  when: ansible_os_family == 'Debian'
+
 - name: Set the root password for the system
   ansible.builtin.user:
     name: root

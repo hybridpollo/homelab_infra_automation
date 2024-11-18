@@ -4,6 +4,11 @@
     name: '{{ undercloud_short_hostname }}.{{ domain }}'
   tags: base_system
 
+- name: 'Set the system time zone'
+  community.general.timezone:
+    name: '{{ time_zone }}'
+  tags: base_system
+
 - name: 'Set the root password for the system'
   ansible.builtin.user:
     name: root
