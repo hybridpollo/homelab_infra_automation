@@ -7,8 +7,8 @@
     mode: 0755
     state: directory
   loop: '{{ undercloud_dirs }}'
-  tags: 
-    - undercloud_config
+  tags:
+    - fetch_git_templates
 
 - name: 'Ensure the {{ undercloud_home_path }}/.ssh directory exists'
   ansible.builtin.file:
@@ -17,8 +17,8 @@
     owner: '{{ undercloud_user }}'
     group: '{{ undercloud_user }}'
     mode: 0744
-  tags: 
-    - undercloud_config
+  tags:
+    - fetch_git_templates
 
 - name: 'Copy github ssh keys to {{ undercloud_home_path }}/.ssh'
   ansible.builtin.copy:
@@ -31,7 +31,8 @@
   loop: 
     - '{{ github_ssh_priv_key }}'
     - '{{ github_ssh_pub_key }}'
-  tags: fetch_git_templates
+  tags:
+    - fetch_git_templates
 
 - name: 'Add github.com to known hosts file'
   ansible.builtin.known_hosts:
@@ -40,7 +41,8 @@
     key: '{{ lookup("pipe", "ssh-keyscan github.com") }}'
     hash_host: true
   when: enable_git_clone == true
-  tags: fetch_git_templates
+  tags:
+    - fetch_git_templates
  
 - name: 'Create the git temporary directory with proper permissions'
   ansible.builtin.file:
@@ -50,7 +52,8 @@
     group: '{{ undercloud_user }}'
     state: directory
   when: enable_git_clone == true
-  tags: fetch_git_templates
+  tags:
+    - fetch_git_templates
 
 - name: 'Clone RHOSP 17 git templates to {{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}'
   ansible.builtin.git:
@@ -63,4 +66,5 @@
   become: yes
   become_user: stack
   when: enable_git_clone == true
-  tags: fetch_git_templates
+  tags:
+    - fetch_git_templates
