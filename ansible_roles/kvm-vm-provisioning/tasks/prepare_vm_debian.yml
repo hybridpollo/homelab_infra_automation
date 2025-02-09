@@ -26,17 +26,17 @@
 - name: '[Debian VM] Generating primary network configuration file template for {{ vm_if_dev }}'
   ansible.builtin.template: 
     src: debian-net-interface-primary.j2
-    dest: /tmp/interfaces
+    dest: '/tmp/{{ vm_if_dev }}.network'
   when: 
     - vm_if_configure_ip == True
     - vm_os_family == 'debian'
   tags:
     - create_vm
 
-- name: '[Debian VM] Generating resolv.conf configuration file template'
+- name: '[Debian VM] Generating resolved.conf configuration file template'
   ansible.builtin.template: 
     src: debian-net-resolv-conf.j2
-    dest: /tmp/resolv.conf
+    dest: /tmp/resolved.conf
   when: 
     - vm_if_configure_ip == True
     - vm_os_family == 'debian'
@@ -46,7 +46,7 @@
 - name: '[Debian VM] Generating additional network interface configuration file templates'
   ansible.builtin.template: 
     src: debian-extra-net-interfaces.j2
-    dest: '/tmp/{{ item.ifname }}.conf'
+    dest: '/tmp/{{ item.vm_if_dev }}.network'
   loop: '{{ vm_extra_if_dev }}'
   when: 
     - vm_configure_extra_if == True
@@ -84,14 +84,15 @@
     --hostname "{{ vm_fqdn_name }}" \
     --root-password 'password:{{ vm_root_pw }}' \
     --ssh-inject 'root:file:/tmp/vm_root_pub_key' \
+    --delete '/etc/netplan/*.yaml' \
     --run-command 'apt-get update ; apt-get install -y  openssh-server' \
     {% if vm_if_configure_ip is sameas true %}
-    --copy-in /tmp/interfaces:/etc/network/ \
-    --copy-in /tmp/resolv.conf:/etc/ \
+    --copy-in /tmp/{{ vm_if_dev }}.network:/etc/systemd/network/ \
+    --copy-in /tmp/resolved.conf:/etc/systemd/ \
     {%endif %}
     {% if vm_configure_extra_if is sameas true %}
     {% for i in vm_extra_if_dev %}
-    --copy-in /tmp/{{ i.ifname }}.conf:/etc/network/interfaces.d/ \
+    --copy-in /tmp/{{ i.vm_if_dev }}.network:/etc/systemd/network/ \
     {% endfor %}
     {%endif %}
   args:
