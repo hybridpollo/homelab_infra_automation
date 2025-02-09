@@ -1,7 +1,7 @@
 ---
 # This play runs on the remote host to build the virtual machine
 # using virt-* commands
-- name: Starting playbook to deploy a CentOS 9 Streams base virtual machine
+- name: Starting playbook to deploy a Debian 12 base virtual machine
   hosts: kvm1.voltron.xyz
   roles:
     - kvm-vm-provisioning

@@ -9,6 +9,7 @@
 vm_boot_on_create: true
 vm_base_name: satellite
 vm_fqdn_name: satellite.voltron.xyz
+vm_base_domain: voltron.xyz
 vm_root_pw: redhat
 # This has been moved to a vault
 # vm_root_pub_key: 
