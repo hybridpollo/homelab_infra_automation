@@ -46,8 +46,6 @@
 - name: '[ON VM DELETE] Deleting virtual machine: {{ vm_fqdn_name }}'
   ansible.builtin.shell: |
     virsh undefine --remove-all-storage '{{ vm_fqdn_name }}'
-    # as failback we also delete the possible lingering disk 
-    rm -f {{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}
   args:
    executable: /bin/bash
   when: 
