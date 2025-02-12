@@ -118,7 +118,7 @@ undercloud_enabled_hardware_types:
 # container registry parameters
 undercloud_container_images_namespace: 'registry.redhat.io/rhosp-rhel9'
 undercloud_container_registry_address: 172.25.47.2:8787
-undercloud_container_images_tag: 17.1.3
+undercloud_container_images_tag: 17.1.4
 undercloud_remote_registry_login: true
 # container registry username and password
 # are vaulted
