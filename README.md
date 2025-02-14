@@ -15,53 +15,57 @@ __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructu
 ```
 ├── ansible.cfg
 ├── ansible_inventory
-│   └── hosts
+│   └── hosts
 ├── ansible_roles
-│   ├── install-osp16-director
-│   ├── install-osp17-director
-│   ├── kvm-vm-provisioning
-│   ├── lab-dns-infra
-│   ├── rhel-host-config
-│   ├── rhel-plex-server-config
-│   └── rpi-host-config
+│   ├── install-osp16-director
+│   ├── install-osp17-director
+│   ├── kvm-vm-provisioning
+│   ├── lab-dns-infra
+│   ├── rhel-host-config
+│   ├── rhel-plex-server-config
+│   └── rpi-host-config
 ├── ansible_vault
-│   └── vaulted-vars.yml
+│   └── vaulted-vars.yml
 ├── LICENSE
 ├── playbooks_base_infrastructure
-│   ├── configure-base-infrastructure-rhel-hosts.yml
-│   ├── configure-base-infrastructure-rpi-hosts.yml
-│   └── vars
+│   ├── configure-base-infrastructure-rhel-hosts.yml
+│   ├── configure-base-infrastructure-rpi-hosts.yml
+│   └── vars
 ├── playbooks_kolla_ansible_openstack
-│   ├── deploy-director-software-osp17.yml
-│   ├── deploy-kvm-rocky-9-single-node.yml
-│   └── vars
+│   ├── deploy-director-software-osp17.yml
+│   ├── deploy-kvm-rocky-9-single-node.yml
+│   └── vars
 ├── playbooks_plex_server
-│   ├── configure-plex-vm.yml
-│   ├── deploy-plex-vm.yml
-│   └── vars
+│   ├── configure-plex-vm.yml
+│   ├── deploy-plex-vm.yml
+│   └── vars
 ├── playbooks_rh_openstack
-│   ├── deploy-director-software-osp16.yml
-│   ├── deploy-director-software-osp17.yml
-│   ├── deploy-kvm-openstack-controller-vm.yml
-│   ├── deploy-kvm-osp16-director-vm.yml
-│   ├── deploy-kvm-osp17-director-vm.yml
-│   └── vars
+│   ├── deploy-director-software-osp16.yml
+│   ├── deploy-director-software-osp17.yml
+│   ├── deploy-kvm-openstack-controller-vm.yml
+│   ├── deploy-kvm-osp16-director-vm.yml
+│   ├── deploy-kvm-osp17-director-vm.yml
+│   └── vars
 ├── playbooks_vm_provisioning
-│   ├── deploy-centos-7-vm.yml
-│   ├── deploy-centos-8-streams-vm.yml
-│   ├── deploy-centos-9-streams-vm.yml
-│   ├── deploy-debian-11-vm.yml
-│   ├── deploy-ocp-bastion.yml
-│   ├── deploy-ocp-boostrap-node.yml
-│   ├── deploy-ocp-lb.yml
-│   ├── deploy-rhel-7-7.vm.yml
-│   ├── deploy-rhel-8-vm.yml
-│   ├── inventory
-│   ├── README.md
-│   └── vars
+│   ├── deploy-c9-bifrost-vm.yml
+│   ├── deploy-centos-7-vm.yml
+│   ├── deploy-centos-8-streams-vm.yml
+│   ├── deploy-centos-9-streams-vm.yml
+│   ├── deploy-debian-12-vm.yml
+│   ├── deploy-ocp-bastion.yml
+│   ├── deploy-ocp-boostrap-node.yml
+│   ├── deploy-ocp-lb.yml
+│   ├── deploy-rhel-7-7.vm.yml
+│   ├── deploy-rhel-8-vm.yml
+│   ├── inventory
+│   ├── README.md
+│   └── vars
 ├── README.md
 └── repo_assets
     └── diagrams
+
+
+
 ```
 
 ## Lab Diagram and References
@@ -81,5 +85,6 @@ You are welcome to copy, fork, ridicule any of the contents of this repository b
 
 ### Use of secrets, vaults, and passwords
 This repository avoids the use of plain text passwords, secrets, and or any other information that could in some eyes considered details which should not be publicly visible.  To that I say, learn how to secure your shit! and most importantly, do not expose anything in Git{hub,lab} that you do not want to be seen. 
+
 
 
