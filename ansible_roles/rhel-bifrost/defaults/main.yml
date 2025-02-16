@@ -1,0 +1,45 @@
+---
+# all variables
+# this are currently defined in the playbook
+# domain:
+# base_hostname: 
+sudo_group: sudo
+time_servers:
+   - clock.nyc.he.net
+   - clock.fmt.he.net
+time_zone: America/Chicago
+user_list:
+  - user_name: berto
+    uid: 1001
+group_list:
+  - group_name: sudo
+    gid: 27
+  - group_name: berto
+    gid: 1001
+reboot_after_updates: true
+rhel_pkgs_to_install:
+  - openssh-clients
+  - openssh-server
+  - chrony
+  - curl
+  - wget
+  - tcpdump
+  - iproute
+  - firewalld
+  - sysstat
+  - ethtool
+  - bind-utils
+  - git
+  - python3
+rhel_pkgs_to_remove:
+  - postfix
+  - ntpd
+  - cloud-init
+base_services:
+  - chronyd
+  - sshd
+  - firewalld
+
+bifrost_repo: https://opendev.org/openstack/bifrost
+bifrost_repo_branch: master
+bifrost_install_path: '{{ ansible_user_dir }}/bifrost_install'
