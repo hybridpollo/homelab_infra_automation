@@ -28,9 +28,6 @@
   notify:
     - restart_plex
 
-
-
-
 - name: 'Ensure Plex Media Server started'
   service:
     name: plexmediaserver

@@ -16,14 +16,13 @@
 - name: 'Ensure /mnt/plex_data nfs mount directory exists'
   ansible.builtin.file:
     path: '{{ nfs_dst_path }}'
-    owner: root
-    group: root
+    owner: nobody
+    group: nobody
     mode: 0777
     state: directory
   when: 
     - nfs_enabled|bool == True 
     - ansible_os_family == 'RedHat'
-    - ansible_hostname == 'plex'
   tags: 
     - base_services
     - setup_nfs
@@ -37,7 +36,6 @@
   when: 
     - nfs_enabled|bool == True 
     - ansible_os_family == 'RedHat'
-    - ansible_hostname == 'plex'
   tags: 
     - base_services
     - setup_nfs
@@ -64,4 +62,3 @@
     - ansible_os_family == 'RedHat'
   tags: 
     - base_services
- 

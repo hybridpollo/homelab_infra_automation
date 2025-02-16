@@ -23,7 +23,7 @@
     - system_updates
 
 - name: 'Reboot after updates'
-  ansible.builtin.shell: > 
+  ansible.builtin.shell: >
     sleep 5 && systemctl reboot
   async: 1
   poll: 0
