@@ -1,5 +1,14 @@
 ---
 - include_tasks: base-system.yml 
+  tags:
+    - base_system
 - include_tasks: system-updates.yml
+  tags:
+    - system_updates
 - include_tasks: base-services.yml 
+  tags:
+    - base_services
+    - setup_nfs
 - include_tasks: configure-plex-services.yml
+  tags:
+    - configure_plex

@@ -8,7 +8,8 @@
 - name: 'Set the system time zone'
   community.general.timezone:
     name: '{{ time_zone }}'
-  tags: base_system
+  tags: 
+    - base_system
 
 - name: 'Setting the root password for system'
   ansible.builtin.user:
