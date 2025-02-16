@@ -1,0 +1,11 @@
+---
+- name: 'Configuring server for the installation of OpenStack Bifrost' 
+  hosts: bifrost_server
+  become: True
+  roles:
+    - role: rhel-bifrost
+  vars:
+    base_hostname: c9-bf01
+    domain: lab.acanorex.io
+  vars_files:
+    - vars/vaulted/bifrost-vaulted-vars.yml

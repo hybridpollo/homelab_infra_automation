@@ -1,0 +1,15 @@
+---
+- include_tasks: system-updates.yml
+  tags: 
+    - system_updates
+- include_tasks: base-system.yml 
+  tags:
+    - base_system
+- include_tasks: base-services.yml 
+  tags:
+    - base_services
+- include_tasks: install-bifrost.yml
+  tags:
+    - install_bifrost 
+# disabled tasks
+# - include_tasks: configure-bifrost.yml

@@ -114,3 +114,12 @@ director_server:
      osp-dir.lab.acanorex.io:
        ansible_host: 172.25.48.10
        ansible_user: root
+
+# Bifrost server
+# This a machine where I am working with Openstack Bifrost to 
+# for baremetal provisioning
+bifrost_server:
+  hosts:
+    c9-bf01.lab.acanorex.io:
+       ansible_host: 172.16.254.252
+       ansible_user: root
