@@ -8,7 +8,7 @@
   tags:
     - system_updates
 
-- name: 'Enable the codeready builders repo before installing epel-release'
+- name: 'Enable the codeready builders repo as pre-requisit for epel repo install'
   community.general.dnf_config_manager:
     name: crb
     state: enabled
@@ -17,18 +17,9 @@
   tags:
     - system_updates
 
-- name: 'Installing epel-release as pre-requisite before proceeding'
+- name: 'Install epel-release'
   ansible.builtin.dnf:
     name: epel-release
-    state: latest
-  when: 
-    - ansible_os_family == 'RedHat'
-  tags:
-    - system_updates
-
-- name: 'Installing the python3-passlib as pre-requisite before proceeding'
-  ansible.builtin.dnf:
-    name: python3-passlib
     state: latest
   when: 
     - ansible_os_family == 'RedHat'
@@ -75,7 +66,7 @@
   tags:
     - system_updates
 
-- name: 'Ensure not needed packages are removed from host'
+- name: 'Remove not needed packages from host'
   ansible.builtin.dnf:
     name: '{{ rhel_pkgs_to_remove }}'
     state: absent
@@ -84,7 +75,7 @@
   tags:
     - system_updates
 
-- name: 'Installing required packages on host'
+- name: 'Install required packages on host'
   ansible.builtin.dnf:
     name: '{{ rhel_pkgs_to_install }}'
     state: present

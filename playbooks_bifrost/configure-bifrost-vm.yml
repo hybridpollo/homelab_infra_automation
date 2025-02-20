@@ -1,5 +1,5 @@
 ---
-- name: 'Configuring server for the installation of OpenStack Bifrost' 
+- name: 'Configuring server for the installation of OpenStack Bifrost'
   hosts: bifrost_server
   become: True
   roles:
