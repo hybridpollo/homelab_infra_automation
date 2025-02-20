@@ -1,0 +1,103 @@
+---
+# Using jinja2 raw parameters here to prevent unintended variable substitution 
+# of the default group vars provided by the bifrost repo
+{% raw %}
+# Default options from bifrost git repo
+# The ironic API URL for bifrost operations.  Defaults to localhost.
+# ironic_url: "http://localhost:6385/"
+
+# password to use between services
+#service_password: aSecretPassword473z
+# mysql_username: Default mysql admin username
+mysql_username: root
+# mysql_password: Default mysql admin user password
+mysql_password:
+
+# The path to the SSH key to be utilized for testing and burn-in
+# to configuration drives. When set, it should be set in both baremetal
+# and localhost groups, however this is only an override to the default.
+# ssh_public_key_path: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
+
+# If testing is true, then the environment is setup for using libvirt
+# virtual machines for the hardware instead of real hardware.
+# testing: true
+
+# The default port to download files via.  Required for IPA URL generation.
+# Presently the defaults are located in the roles, however if changed both
+# the localhost and baremetal group files must be updated.
+# file_url_port: 8080
+
+# IPA Image parameters.  If these are changed, they must be changed in
+# Both localhost and baremetal groups.  Presently the defaults
+# in each role should be sufficient for proper operation.
+# ipa_kernel: "{{http_boot_folder}}/ipa.kernel"
+# ipa_ramdisk: "{{http_boot_folder}}/ipa.initramfs"
+# ipa_kernel_url: "http://{{ hostvars[inventory_hostname]['ansible_' + network_interface]['ipv4']['address'] }}:{{file_url_port}}/ipa.kernel"
+# ipa_ramdisk_url: "http://{{ hostvars[inventory_hostname]['ansible_' + network_interface]['ipv4']['address'] }}:{{file_url_port}}/ipa.initramfs"
+
+# The http_boot_folder defines the root folder for the webserver.
+# If this setting is changed, it must be applied to both the baremetal
+# and localhost groups. Presently the role defaults are set to the value
+# below.
+# http_boot_folder: /var/lib/ironic/httpboot
+
+# The settings for the name of the image to be deployed along with the
+# on disk location are below.  If changed, these settings must be applied
+# to both the baremetal and localhost groups.  If the file is already on
+# disk, then the image generation will not take place, otherwise an image
+# will be generated using diskimage-builder.
+# deploy_image_filename: "deployment_image.qcow2"
+# deploy_image: "{{http_boot_folder}}/{{deploy_image_filename}}"
+
+# Setting to utilize diskimage-builder to create a bootable image.
+create_image_via_dib: "{{ not (download_custom_deploy_image | default(use_cirros) | default(false) | bool) }}"
+dib_image_type: vm
+
+# Create IPA image instead of downloading an pre-made IPA image.
+create_ipa_image: false
+{% endraw %}
+
+# Begin rhel-bifrost role defined variables
+# The network interface that bifrost will be operating on.  Defaults
+# to virbr0 in roles, can be overridden here.
+network_interface: {{ bf_network_interface }}
+
+# Dnsmasq default route for clients. If not defined, dnsmasq will push to
+# clients as default route the same IP of the dnsmasq server.
+# Default: undefined
+# the lab provisioning network  uses 172.25.47.1
+# as the l3 gateway
+dnsmasq_router: {{ bf_dnsmasq_router }}
+
+# Dnsmasq default nameserver for clients. If not defined, this setting
+# will be ignored.
+# Default: undefined
+dnsmasq_dns_servers: {{ bf_dnsmasq_dns_servers | join(',') }}
+
+# dhcp options start
+{% if bf_enable_dhcp is sameas true %}
+enable_dhcp: true
+{% else %}
+enable_dhcp: false
+{% endif %}
+
+# Set this to true to configure dnsmasq to respond to requests from the
+# hosts in your dynamic inventory. Requires dhcp_provider to be set to none
+{% if bf_inventory_dhcp is sameas true %}
+inventory_dhcp: true
+dhcp_provider: "none"
+{% else %}
+inventory_dhcp: false 
+dhcp_provider: dnsmasq
+{% endif %}
+
+# This is supposedly ignored if inventory_dhcp is true 
+# but leaving here for testing 
+dhcp_pool_start: {{ bf_dhcp_pool_start}}
+dhcp_pool_end: {{ bf_dhcp_pool_end }}
+dhcp_lease_time: {{ bf_dhcp_lease_time }}
+dhcp_static_mask: {{ bf_dhcp_static_mask }}
+
+# override ironic default boot mode
+default_boot_mode: {{ bf_default_boot_mode }}
+

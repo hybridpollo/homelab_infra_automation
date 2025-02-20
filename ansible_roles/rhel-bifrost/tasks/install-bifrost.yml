@@ -1,20 +1,28 @@
 ---
-- name: 'Create the git temporary directory with proper permissions.'
+- name: 'Create the git temporary directory with proper permissions'
   ansible.builtin.file:
-    path: '{{ ansible_user_dir }}/.ansible/tmp'
+    path: '/home/{{ bf_install_user }}/.ansible/tmp'
     mode: 0755
-    owner: '{{ ansible_user_id }}'
-    group: '{{ ansible_user_id }}'
+    owner: '{{ bf_install_user | default("bifrost") }}'
+    group: '{{ bf_install_user | default("bifrost") }}'
     state: directory
+  become: yes
+  become_user: '{{ bf_install_user | default("bifrost") }}'
+  become_method: su 
+  become_flags: '--login'
   tags:
     - install_bifrost
 
 - name: 'Clone the bifrost repo' 
   ansible.builtin.git:
-    repo: '{{ bifrost_repo }}'
-    version: '{{ bifrost_repo_branch }}'
-    dest: '{{ bifrost_install_path }}'
+    repo: '{{ bf_repo }}'
+    version: '{{ bf_repo_branch }}'
+    dest: '{{ bf_install_path }}'
     clone: true
-    force: true
+    force: false
+  become: yes
+  become_user: '{{ bf_install_user | default("bifrost") }}'
+  become_method: su 
+  become_flags: '--login'
   tags:
     - install_bifrost
