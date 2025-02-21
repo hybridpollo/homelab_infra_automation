@@ -2,12 +2,14 @@
 - name: Set the system hostname
   ansible.builtin.hostname:
     name: '{{ base_hostname }}.{{ domain }}'
-  tags: base_system
+  tags: 
+    - base_system
 
-- name: 'Set the system time zone'
+- name: Set the system time zone
   community.general.timezone:
     name: '{{ time_zone }}'
-  tags: base_system
+  tags: 
+    - base_system
 
 - name: Set the root password for the system
   ansible.builtin.user:
@@ -15,13 +17,18 @@
     password: '{{ root_pass | password_hash("sha512") }}'
     update_password: always
     state: present
-  tags: base_system
+  tags: 
+    - base_system
 
 - name: Ensure the configured sudo group {{ sudo_group }} exists
   ansible.builtin.group:
     name: '{{ sudo_group }}'
     state: present
-  tags: base_system
+  when: 
+    - local_user_list is defined and local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system
 
 - name: Create the local users for the system
   ansible.builtin.user: 
@@ -34,7 +41,11 @@
     update_password: always
     state: present 
   loop: '{{ local_user_list }}'
-  tags: base_system
+  when: 
+    - local_user_list is defined and local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system
 
 - name: Ensure /etc/sudoers.d directory exists 
   ansible.builtin.file: 
@@ -43,7 +54,11 @@
      owner: root
      group: root
      mode: 0750
-  tags: base_system
+  when: 
+    - local_user_list is defined and local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system
 
 - name: Create sudoers file from template
   ansible.builtin.template: 
@@ -52,4 +67,8 @@
      owner: root
      group: root
      mode: 0440
-  tags: base_system
+  when: 
+    - local_user_list is defined and local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system

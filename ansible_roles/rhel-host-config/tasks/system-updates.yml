@@ -51,3 +51,25 @@
     - ansible_os_family == 'RedHat'
   tags:
     - system_updates
+
+- name: Remove not needed packages from host
+  ansible.builtin.dnf:
+    name: '{{ rhel_pkgs_to_remove | default(None) }}'
+    state: absent
+  when: 
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+    - rhel_pkgs_to_remove is defined or rhel_pkgs_to_remove | length > 0
+  tags:
+    - system_updates
+
+- name: Install required packages on host
+  ansible.builtin.dnf:
+    name: '{{ rhel_pkgs_to_install | default(None) }}'
+    state: present
+  when: 
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+    - rhel_pkgs_to_install is defined or rhel_pkgs_to_install | length > 0
+  tags:
+    - system_updates
