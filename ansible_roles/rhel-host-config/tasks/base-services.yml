@@ -10,7 +10,8 @@
      - restart_chrony 
   when: 
     - ansible_os_family == 'RedHat'
-  tags: base_services
+  tags: 
+    - base_services
 
 - name: Configure the sshd server from ansible template
   ansible.builtin.template:
@@ -23,9 +24,10 @@
      - restart_sshd
   when: 
     - ansible_os_family == 'RedHat'
-  tags: base_services
+  tags: 
+    - base_services
 
-- name: 'Ensure base services started.'
+- name: Ensure base services started
   ansible.builtin.service: 
     name: '{{ item }}'
     state: started
@@ -35,4 +37,5 @@
     - sshd
   when: 
     - ansible_os_family == 'RedHat'
-  tags: base_services
+  tags: 
+    - base_services
