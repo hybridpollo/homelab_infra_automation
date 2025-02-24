@@ -1,13 +1,13 @@
 ---
 - name: Set the system hostname
   ansible.builtin.hostname:
-    name: '{{ base_hostname }}.{{ domain }}'
+    name: '{{ base_hostname | default("localhost") }}.{{ domain | default("localdomain") }}'
   tags: 
     - base_system
 
 - name: Set the system time zone
   community.general.timezone:
-    name: '{{ time_zone }}'
+    name: '{{ time_zone | default("UTC") }}'
   tags: 
     - base_system
 
@@ -25,7 +25,8 @@
     name: '{{ sudo_group }}'
     state: present
   when: 
-    - local_user_list is defined and local_user_list | length > 0
+    - local_user_list is defined 
+    - local_user_list | length > 0
     - ansible_os_family == 'RedHat'
   tags: 
     - base_system
@@ -42,7 +43,8 @@
     state: present 
   loop: '{{ local_user_list }}'
   when: 
-    - local_user_list is defined and local_user_list | length > 0
+    - local_user_list is defined 
+    - local_user_list | length > 0
     - ansible_os_family == 'RedHat'
   tags: 
     - base_system
@@ -55,7 +57,8 @@
      group: root
      mode: 0750
   when: 
-    - local_user_list is defined and local_user_list | length > 0
+    - local_user_list is defined 
+    - local_user_list | length > 0
     - ansible_os_family == 'RedHat'
   tags: 
     - base_system
@@ -68,7 +71,8 @@
      group: root
      mode: 0440
   when: 
-    - local_user_list is defined and local_user_list | length > 0
+    - local_user_list is defined 
+    - local_user_list | length > 0
     - ansible_os_family == 'RedHat'
   tags: 
     - base_system

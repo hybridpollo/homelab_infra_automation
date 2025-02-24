@@ -4,7 +4,7 @@
     name: cloud-init
     state: absent
   when: 
-    - rhsm_enable_registration == True
+    - rhsm_enable_registration|bool == True
     - ansible_os_family == 'RedHat'
   tags:
     - system_updates
@@ -19,7 +19,7 @@
   retries: 10
   delay: 5
   when: 
-    - rhsm_enable_registration == True
+    - rhsm_enable_registration|bool == True
     - ansible_os_family == 'RedHat'
   tags:
     - system_updates
@@ -32,8 +32,8 @@
   ignore_errors: true
   when: 
     - is_updated is changed
-    - reboot_after_updates == True
-    - rhsm_enable_registration == True
+    - reboot_after_updates|bool == True
+    - rhsm_enable_registration|bool == True
     - ansible_os_family == 'RedHat'
   tags:
     - system_updates
@@ -46,8 +46,8 @@
     timeout: 300 
   when: 
     - is_updated is changed
-    - reboot_after_updates == True
-    - rhsm_enable_registration == True
+    - reboot_after_updates|bool == True
+    - rhsm_enable_registration|bool == True
     - ansible_os_family == 'RedHat'
   tags:
     - system_updates
@@ -57,7 +57,7 @@
     name: '{{ rhel_pkgs_to_remove | default(omit) }}'
     state: absent
   when: 
-    - rhsm_enable_registration == True
+    - rhsm_enable_registration|bool == True
     - ansible_os_family == 'RedHat'
     - rhel_pkgs_to_remove is defined 
     - rhel_pkgs_to_remove | length > 0
@@ -69,7 +69,7 @@
     name: '{{ rhel_pkgs_to_install | default(omit) }}'
     state: present
   when: 
-    - rhsm_enable_registration == True
+    - rhsm_enable_registration|bool == True
     - ansible_os_family == 'RedHat'
     - rhel_pkgs_to_install is defined 
     - rhel_pkgs_to_install | length > 0
