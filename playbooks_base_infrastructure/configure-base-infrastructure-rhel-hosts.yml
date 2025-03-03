@@ -25,6 +25,7 @@
     rhsm_repositories_enabled:
       - rhel-8-for-x86_64-baseos-rpms
       - rhel-8-for-x86_64-appstream-rpms
+    reboot_after_updates: true
   vars_files:
     - vars/vaulted/vaulted-vars.yml
 
@@ -41,5 +42,14 @@
       - rhel-9-for-x86_64-appstream-rpms
       - codeready-builder-for-rhel-9-x86_64-rpms
       - ansible-automation-platform-2.4-for-rhel-9-x86_64-rpms
+    rhel_pkgs_to_install:
+      - NetworkManager
+      - bind-utils
+      - yum-utils
+      - tmux
+      - vim-enhanced
+      - ansible-core
+      - git
+    reboot_after_updates: false
   vars_files:
     - vars/vaulted/vaulted-vars.yml

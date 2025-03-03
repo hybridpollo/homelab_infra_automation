@@ -7,5 +7,15 @@
   vars:
     base_hostname: plex
     domain: voltron.xyz
+    rhsm_repositories_enabled:
+      - baseos
+      - appstream
+      - extras-common
+    rhel_pkgs_to_install:
+      - NetworkManager
+      - bind-utils
+      - yum-utils
+      - tmux
+      - vim-enhanced
   vars_files:
     - vars/vaulted/plex-vaulted-vars.yml

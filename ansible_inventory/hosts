@@ -55,7 +55,6 @@ idm_hosts:
     idm.voltron.xyz:
       ansible_user: arlaporte
       base_hostname: idm
-      reboot_after_updates: true
 
 # Utility host group
 # Purposes:
@@ -66,23 +65,7 @@ utility_hosts:
     utility.voltron.xyz:
       ansible_user: arlaporte
       base_hostname: utility
-      # additional packages to install
-      rhsm_repositories_enabled:
-        - rhel-9-for-x86_64-baseos-rpms
-        - rhel-9-for-x86_64-appstream-rpms
-        - ansible-automation-platform-2.4-for-rhel-9-x86_64-rpms
-      # additional packages to install
-      # not part of the core packages 
-      # specified on the role
-      rhsm_rpm_packages:
-        - NetworkManager
-        - bind-utils
-        - yum-utils
-        - tmux
-        - vim-enhanced
-        - ansible-core
-        - git
- 
+
 # Plex group
 # Purposes:
 #  This is the vm that I use as my plex server
@@ -91,20 +74,6 @@ plex_hosts:
   hosts:
     plex.voltron.xyz:
       ansible_user: root
-      base_hostname: plex
-      # additional packages to install
-      rhsm_repositories_enabled:
-        - baseos
-        - appstream
-        - extras-common
-      # not part of the core packages 
-      # specified on the role
-      rhsm_rpm_packages:
-        - NetworkManager
-        - bind-utils
-        - yum-utils
-        - tmux
-        - vim-enhanced
 
 # Red Hat OpenStack Platform Director 
 # this is used for red hat openstack platform deployments
