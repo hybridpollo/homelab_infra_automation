@@ -17,19 +17,23 @@ __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructu
 ├── ansible_inventory
 │   └── hosts
 ├── ansible_roles
+│   ├── host-setup-common
 │   ├── install-osp16-director
 │   ├── install-osp17-director
 │   ├── kvm-vm-provisioning
 │   ├── lab-dns-infra
-│   ├── rhel-host-config
+│   ├── rhel-bifrost
 │   ├── rhel-plex-server-config
 │   └── rpi-host-config
 ├── ansible_vault
 │   └── vaulted-vars.yml
-├── LICENSE
 ├── playbooks_base_infrastructure
 │   ├── configure-base-infrastructure-rhel-hosts.yml
 │   ├── configure-base-infrastructure-rpi-hosts.yml
+│   └── vars
+├── playbooks_bifrost
+│   ├── configure-bifrost-vm.yml
+│   ├── deploy-c9-bifrost-vm.yml
 │   └── vars
 ├── playbooks_kolla_ansible_openstack
 │   ├── deploy-director-software-osp17.yml
@@ -47,7 +51,7 @@ __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructu
 │   ├── deploy-kvm-osp17-director-vm.yml
 │   └── vars
 ├── playbooks_vm_provisioning
-│   ├── deploy-c9-bifrost-vm.yml
+│   ├── README.md
 │   ├── deploy-centos-7-vm.yml
 │   ├── deploy-centos-8-streams-vm.yml
 │   ├── deploy-centos-9-streams-vm.yml
@@ -58,13 +62,9 @@ __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructu
 │   ├── deploy-rhel-7-7.vm.yml
 │   ├── deploy-rhel-8-vm.yml
 │   ├── inventory
-│   ├── README.md
 │   └── vars
-├── README.md
 └── repo_assets
     └── diagrams
-
-
 
 ```
 
@@ -85,6 +85,4 @@ You are welcome to copy, fork, ridicule any of the contents of this repository b
 
 ### Use of secrets, vaults, and passwords
 This repository avoids the use of plain text passwords, secrets, and or any other information that could in some eyes considered details which should not be publicly visible.  To that I say, learn how to secure your shit! and most importantly, do not expose anything in Git{hub,lab} that you do not want to be seen. 
-
-
 

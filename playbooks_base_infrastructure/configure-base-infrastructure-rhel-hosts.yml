@@ -3,7 +3,7 @@
   hosts: kvm_hosts
   become: True
   roles:
-    - role: rhel-host-config 
+    - role: host-setup-common
   vars:
     domain: voltron.xyz
     rhsm_sys_release_version: 9
@@ -18,7 +18,7 @@
   hosts: idm_hosts
   become: True
   roles:
-    - role: rhel-host-config 
+    - role: host-setup-common
   vars:
     domain: voltron.xyz
     rhsm_sys_release_version: 8
@@ -32,7 +32,7 @@
   hosts: utility_hosts
   become: True
   roles:
-    - role: rhel-host-config 
+    - role: host-setup-common
   vars:
     domain: voltron.xyz
     rhsm_sys_release_version: 9
