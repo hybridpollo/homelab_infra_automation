@@ -1,0 +1,109 @@
+---
+- name: Installing Tripleo rpm packages
+  ansible.builtin.dnf:
+    name: '{{ undercloud_tripleo_rpms }}'
+    state: installed
+    update_cache: yes
+  register: result
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  when:
+    - ansible_os_family == 'RedHat'
+    - undercloud_tripleo_rpms is defined
+    - undercloud_tripleo_rpms | length > 0
+  tags:
+    - undercloud_config
+
+- name: Installing rpm dependencies for TLS-E
+  ansible.builtin.dnf:
+    name: '{{ tls_everywhere_rpms }}'
+    state: installed
+    update_cache: yes
+  register: result
+  when: 
+    - ansible_os_family == 'RedHat'
+    - enable_tls_everywhere|bool == True
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  tags:
+    - undercloud_config
+
+- name: Generate undercloud.conf from template to {{ undercloud_home_path}}/{{ osp_templates_download_directory_name }}/undercloud
+  ansible.builtin.template:
+    src: undercloud.conf.j2
+    dest: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud.conf'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+    mode: 0644
+  register: uc_conf_gen 
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - undercloud_config
+
+- name: Configuring the container image preparation file from template
+  ansible.builtin.template:
+    src: container_image_prepare.yml.j2
+    dest: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/container_image_prepare.yml'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+    mode: 0644
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - undercloud_config
+
+- name: Configuring the undercloud custom parameters file from template
+  ansible.builtin.template:
+    src: undercloud_custom_env.yml.j2
+    dest: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud_custom_env.yml'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+    mode: 0644
+  when: 
+    - ansible_os_family == 'RedHat'
+    - undercloud_enable_custom_environment_file|bool == True
+  tags: 
+    - undercloud_config
+
+- name: Symlink the undercloud.conf from git repository to {{ undercloud_home_path }}/undercloud.conf
+  ansible.builtin.file:
+    src: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud.conf'
+    dest: '{{ undercloud_home_path }}/undercloud.conf'
+    state: link
+    force: true
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - undercloud_config
+
+- name: Symlink the container_image_prepare.yml from git repository to {{ undercloud_home_path }}/container_image_prepare.yml
+  ansible.builtin.file:
+    src: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/container_image_prepare.yml'
+    dest: '{{ undercloud_home_path }}/container_image_prepare.yml'
+    state: link
+    force: true
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+  when:
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - undercloud_config
+
+- name: Symlink the undercloud_custom_env.yml file from git repository to {{ undercloud_home_path }}/undercloud_custom_env.yml
+  ansible.builtin.file:
+    src: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}/undercloud/undercloud_custom_env.yml'
+    dest: '{{ undercloud_home_path }}/undercloud_custom_env.yml'
+    state: link
+    force: true
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+  when: 
+    - ansible_os_family == 'RedHat'
+    - undercloud_enable_custom_environment_file|bool == True
+  tags: 
+    - undercloud_config
