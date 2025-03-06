@@ -1,5 +1,5 @@
 ---
-- name: 'Extracting overcloud deployment images into the {{ uc_home_path }}/overcloud_images directory'
+- name: Extracting overcloud deployment images into the {{ undercloud_home_path }}/overcloud_images directory
   unarchive: 
     remote_src: yes
     src: '{{ item }}'
@@ -10,7 +10,7 @@
   tags:
     - undercloud_post_install
 
-- name: 'Uploading deployment images to the undercloud'
+- name: Uploading deployment images to the undercloud
   shell: |
     source '{{ undercloud_home_path }}'/stackrc;
     openstack overcloud image upload --image-path '{{ undercloud_home_path }}'/rhosp_overcloud_deployment_images > /dev/null
