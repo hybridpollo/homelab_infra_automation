@@ -39,8 +39,7 @@ reboot_after_updates: False
 enabled_system_services:
   - chronyd
   - sshd
-disabled_system_services:
-  - rpcbind
+disabled_system_services: []
 
 # base configuration for host networking
 # in the case of single purpose hosts like

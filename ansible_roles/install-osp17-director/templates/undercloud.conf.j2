@@ -366,7 +366,7 @@ undercloud_enable_selinux = false
 # appropriately.  If set, the undercloud install will configure all
 # system hostname settings. (string value)
 #undercloud_hostname = <None>
-undercloud_hostname = {{ undercloud_short_hostname }}.{{ domain }}
+undercloud_hostname = {{ undercloud_hostname }}.{{ overcloud_domain }}
 
 # The path to a log file to store the undercloud install/upgrade logs.
 # (string value)
