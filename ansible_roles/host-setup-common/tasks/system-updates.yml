@@ -9,6 +9,27 @@
   tags:
     - system_updates
 
+<<<<<<< Updated upstream
+=======
+- name: (CentOS Only) Enable the codeready builders repo as pre-requisite for epel repo install
+  community.general.dnf_config_manager:
+    name: crb
+    state: enabled
+  when: 
+    - ansible_distribution == 'CentOS'
+  tags:
+    - system_updates
+
+- name: (CentOS Only) Install epel-release
+  ansible.builtin.dnf:
+    name: epel-release
+    state: latest
+  when: 
+    - ansible_distribution == 'CentOS'
+  tags:
+    - system_updates
+
+>>>>>>> Stashed changes
 - name: Update all installed packages
   ansible.builtin.dnf:
     name: '*'
