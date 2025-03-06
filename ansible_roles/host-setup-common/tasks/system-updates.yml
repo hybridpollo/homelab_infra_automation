@@ -8,7 +8,7 @@
   tags:
     - system_updates
 
-- name: [CentOS Only] Enable the codeready builders repo as pre-requisite for epel repo install
+- name: (CentOS Only) Enable the codeready builders repo as pre-requisite for epel repo install
   community.general.dnf_config_manager:
     name: crb
     state: enabled
@@ -17,7 +17,7 @@
   tags:
     - system_updates
 
-- name: [CentOS Only] Install epel-release
+- name: (CentOS Only) Install epel-release
   ansible.builtin.dnf:
     name: epel-release
     state: latest
