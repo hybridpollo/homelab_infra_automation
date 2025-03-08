@@ -25,9 +25,7 @@ rhsm_url_prefix: "/subscription"
 rhsm_repositories_enabled:
   - rhel-9-for-x86_64-baseos-rpms
   - rhel-9-for-x86_64-appstream-rpms
-#rhel_pkgs_to_remove:
-#  - package1
-#  - package2
+rhel_pkgs_to_remove: []
 rhel_pkgs_to_install:
   - bind-utils
   - yum-utils

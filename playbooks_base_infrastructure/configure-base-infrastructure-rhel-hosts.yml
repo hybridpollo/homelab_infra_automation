@@ -11,6 +11,15 @@
       - rhel-9-for-x86_64-baseos-rpms
       - rhel-9-for-x86_64-appstream-rpms
       - codeready-builder-for-rhel-9-x86_64-rpms
+    rhel_pkgs_to_install:
+      - NetworkManager
+      - bind-utils
+      - yum-utils
+      - tmux
+      - vim-enhanced
+      - qemu-kvm
+      - libvirt
+      - virt-install 
   vars_files:
     - vars/vaulted/vaulted-vars.yml
 
@@ -48,7 +57,6 @@
       - yum-utils
       - tmux
       - vim-enhanced
-      - ansible-core
       - git
     reboot_after_updates: false
   vars_files:
