@@ -20,6 +20,8 @@
       - qemu-kvm
       - libvirt
       - virt-install 
+      - sysstat
+      - pcp-system-tools
   vars_files:
     - vars/vaulted/vaulted-vars.yml
 
