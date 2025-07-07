@@ -20,6 +20,9 @@
       - qemu-kvm
       - libvirt
       - virt-install 
+      - guestfs-tools
+      - NetworkManager
+      - ipa-client
       - sysstat
       - pcp-system-tools
   vars_files:
@@ -32,10 +35,10 @@
     - role: host-setup-common
   vars:
     domain: voltron.xyz
-    rhsm_sys_release_version: 8
+    rhsm_sys_release_version: 9
     rhsm_repositories_enabled:
-      - rhel-8-for-x86_64-baseos-rpms
-      - rhel-8-for-x86_64-appstream-rpms
+      - rhel-9-for-x86_64-baseos-rpms
+      - rhel-9-for-x86_64-appstream-rpms
     reboot_after_updates: true
   vars_files:
     - vars/vaulted/vaulted-vars.yml
