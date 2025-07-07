@@ -1,19 +1,5 @@
 ---
-- name: 'Configure chronyd from template'
-  ansible.builtin.template:
-    src: templates/chrony_server.j2
-    dest: /etc/chrony.conf
-    owner: root
-    group: root
-    mode: 0440
-  when: 
-    - ansible_os_family == 'RedHat'
-  tags: 
-    - base_services
-  notify: 
-     - restart_chrony 
-
-- name: 'Ensure /mnt/plex_data nfs mount directory exists'
+- name: "Ensure {{ nfs_dst_path }} nfs mount directory exists"
   ansible.builtin.file:
     path: '{{ nfs_dst_path }}'
     owner: nobody
@@ -27,7 +13,7 @@
     - base_services
     - setup_nfs
     
-- name: 'Configuring Plex NFS Mounts on host'
+- name: Configuring Plex NFS Mounts on host
   ansible.builtin.mount: 
     fstype: nfs
     path: '{{ nfs_dst_path }}'
@@ -40,24 +26,13 @@
     - base_services
     - setup_nfs
  
-- name: 'Setup Plex yum repo from template'
+- name: Setup Plex yum repository from template
   ansible.builtin.copy:
     src: files/plex.repo
     dest: /etc/yum.repos.d/plex.repo
     owner: root
     group: root
     mode: 0644
-  when: 
-    - ansible_os_family == 'RedHat'
-  tags: 
-    - base_services
- 
-- name: 'Ensure base services are enabled and started'
-  ansible.builtin.service:
-    name: '{{ item }}'
-    state: started
-    enabled: yes
-  loop: '{{ base_services }}'
   when: 
     - ansible_os_family == 'RedHat'
   tags: 
