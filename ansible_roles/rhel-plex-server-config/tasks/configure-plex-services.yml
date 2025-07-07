@@ -1,8 +1,10 @@
 ---
-- name: 'Enable legacy crypto policies in RHEL 9 to support sha1 keys (used by pms repository)'
+- name: "Enable legacy crypto policies in RHEL 9 to support sha1 keys (used by pms repository)"
   ansible.builtin.shell: >
     update-crypto-policies --set LEGACY
-  when: ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 9
+  when: 
+    - ansible_os_family == 'RedHat' 
+    - ansible_distribution_major_version|int >= 9
   tags:
     - configure_plex
 
@@ -14,21 +16,21 @@
   tags:
     - configure_plex
 
-- name: 'Copy the default Preferences.xml file to the Plex Media Server location..'
-  ansible.builtin.template:
-    src: templates/plexPreferences.xml.j2
-    dest: '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Preferences.xml'
-    owner: plex
-    group: plex
-    mode: 0600
-  when:
-    - ansible_os_family == 'RedHat'
-  tags:
-    - configure_plex
-  notify:
-    - restart_plex
+#- name: Copy the default Preferences.xml file to the Plex Media Server location
+#  ansible.builtin.template:
+#    src: templates/plexPreferences.xml.j2
+#    dest: '/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Preferences.xml'
+#    owner: plex
+#    group: plex
+#    mode: 0600
+#  when:
+#    - ansible_os_family == 'RedHat'
+#  tags:
+#    - configure_plex
+#  notify:
+#    - restart_plex
 
-- name: 'Ensure Plex Media Server started'
+- name: Ensure Plex Media Server started
   service:
     name: plexmediaserver
     state: started
@@ -38,7 +40,7 @@
   tags:
     - configure_plex
 
-- name: 'Open firewalld Plex Media Server ports'
+- name: Open firewalld Plex Media Server ports
   firewalld:
     zone: public
     port: '{{ item.port }}/{{ item.proto }}'
