@@ -33,6 +33,15 @@
   tags:
     - rhsm_register
 
+- name: "Pin to rhsm system release: {{ rhsm_sys_release_version }} after subscription"
+  community.general.rhsm_release:
+    release: '{{ rhsm_sys_release_version | default(9) }}'
+  when: 
+    - rhsm_enable_registration|bool == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - rhsm_register
+
 - name: Disable all repositories not needed
   community.general.rhsm_repository:
     name: '*'

@@ -52,9 +52,9 @@ kvm_hosts:
 #
 idm_hosts:
   hosts:
-    idm.voltron.xyz:
+    idm-1.voltron.xyz:
       ansible_user: arlaporte
-      base_hostname: idm
+      base_hostname: idm-1
 
 # Utility host group
 # Purposes:
