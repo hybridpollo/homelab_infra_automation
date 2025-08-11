@@ -1,0 +1,15 @@
+---
+# This play runs on the remote host to build the virtual machine
+# using virt-* commands
+- name: Starting playbook to deploy a RHEL 9 virtual machine
+  hosts: kvm01.acanorex.io
+  roles:
+    - kvm-vm-provisioning
+  vars_files:
+    - vars/libvirt-rhel-9-vm.yml
+    - vars/vaulted/libvirt-rhel-9-vm.yml
+  tags:
+    - create_vm
+    - delete_vm
+    - start_vm
+

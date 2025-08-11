@@ -1,0 +1,39 @@
+---
+- name: "Ensure {{ nfs_dst_path }} nfs mount directory exists"
+  ansible.builtin.file:
+    path: '{{ nfs_dst_path }}'
+    owner: nobody
+    group: nobody
+    mode: 0777
+    state: directory
+  when: 
+    - nfs_enabled|bool == True 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_services
+    - setup_nfs
+    
+- name: Configuring Plex NFS Mounts on host
+  ansible.builtin.mount: 
+    fstype: nfs
+    path: '{{ nfs_dst_path }}'
+    src: '{{ nfs_src_host }}:{{ nfs_src_path }}'
+    state: mounted
+  when: 
+    - nfs_enabled|bool == True 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_services
+    - setup_nfs
+ 
+- name: Setup Plex yum repository from template
+  ansible.builtin.copy:
+    src: files/plex.repo
+    dest: /etc/yum.repos.d/plex.repo
+    owner: root
+    group: root
+    mode: 0644
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_services

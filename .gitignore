@@ -1,0 +1,6 @@
+# gitignore
+.git
+*.retry
+*.log
+*.zip
+ansible.cfg

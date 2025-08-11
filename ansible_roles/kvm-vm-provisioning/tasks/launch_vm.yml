@@ -1,0 +1,42 @@
+---
+- name: 'Launching virtual machine {{ vm_fqdn_name }}' 
+  ansible.builtin.shell: |
+    export LIBGUESTFS_BACKEND=direct;
+    virt-install --name '{{ vm_fqdn_name }}' \
+    --vcpus '{{ vm_vcpu_count }}' \ 
+    --ram '{{ vm_ram_size_mb }}' \ 
+    {% if vm_enable_extra_disk is sameas true %}
+    --disk '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
+    --disk '{{ vm_dest_disk_path }}/{{ vm_dest_extra_disk_file }},size={{ vm_extra_disk_size_gb }}' \
+    {% else %}
+    --disk '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
+    {%endif %}
+    {% if vm_net_bridges|length > 1 %}
+    {% for bridge in vm_net_bridges %}
+    --network 'bridge={{ bridge }}' \
+    {% endfor %}
+    {% else %}
+    --network 'bridge={{ vm_net_bridges | first }}' \
+    {%endif %}
+    --os-variant '{{ vm_os_variant }}' \
+    --graphics vnc,listen=0.0.0.0 \
+    --hvm \
+    --noautoconsole \
+    {% if vm_boot_on_create is sameas false %}
+    --noreboot \
+    {%endif %}
+    --import
+  args:
+    executable: /bin/bash
+  tags:
+    - start_vm
+    - create_vm
+
+- name: Virtual machine installation complete
+  debug:
+    msg: 
+      - 'Virtual machine has been configured and defined in hypervisor'
+      - 'If vm_boot_on_create is set, the vm should be auto started'
+  tags:
+    - start_vm
+    - create_vm

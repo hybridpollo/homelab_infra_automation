@@ -1,0 +1,16 @@
+# sets the primary network interface
+# the primary network interface
+[Match]
+Name={{ vm_if_dev }}
+
+[Network]
+DHCP=no
+Address={{ vm_if_addr}}/{{ vm_if_cidr }}
+Gateway={{ vm_if_gateway }}
+DNS={{ vm_if_dns1 }} {{ vm_if_dns2 }}
+Domains={{ vm_base_domain }}
+LinkLocalAddressing=no
+
+[Link]
+MTUBytes={{ vm_if_mtu | default('1500') }}
+

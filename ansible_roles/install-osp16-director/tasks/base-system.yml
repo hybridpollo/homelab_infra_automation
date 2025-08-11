@@ -1,0 +1,53 @@
+---
+- name: 'Set the system hostname'
+  ansible.builtin.hostname:
+    name: '{{ undercloud_short_hostname }}.{{ domain }}'
+  tags: base_system
+
+- name: 'Set the system time zone'
+  community.general.timezone:
+    name: '{{ time_zone }}'
+  tags: base_system
+
+- name: 'Set the root password for the system'
+  ansible.builtin.user:
+    name: root
+    password: '{{ root_pass | password_hash("sha512", password_salt) }}'
+    update_password: always
+  tags: base_system
+
+- name: 'Ensure the configured sudo group {{ sudo_group }} exists'
+  ansible.builtin.group:
+    name: '{{ sudo_group }}'
+    state: present
+  tags: base_system
+
+- name: 'Create the base users for the system'
+  ansible.builtin.user: 
+    name: '{{ item.user_name }}'
+    uid: '{{ item.uid }}'
+    groups: '{{ sudo_group }}'
+    append: yes
+    shell: /bin/bash
+    password: '{{ user_pass | password_hash("sha512", password_salt) }}'
+    update_password: always
+  loop: '{{ local_user_list }}'
+  tags: base_system
+
+- name: 'Ensure /etc/sudoers.d directory exists' 
+  ansible.builtin.file: 
+     path: /etc/sudoers.d
+     state: directory
+     owner: root
+     group: root
+     mode: 0750
+  tags: base_system
+
+- name: 'Create sudoers file from template'
+  ansible.builtin.template: 
+     src: templates/extra-sudo-users.j2
+     dest: /etc/sudoers.d/extra-sudo-users
+     owner: root
+     group: root
+     mode: 0440
+  tags: base_system

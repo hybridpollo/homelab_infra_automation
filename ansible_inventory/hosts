@@ -1,0 +1,97 @@
+# Inventory target hosts for this repository
+#
+#
+# Raspberry pi host groups
+# Purposes:
+#   - ssh jump server / bastion 
+#   - nsd authoritative dns server for lab networks
+#   - unbound dns caching server for dns caching.
+#
+rpi_hosts:
+  hosts:
+    jump.acanorex.io:
+      ansible_user: berto
+      ansible_host: 172.25.49.252
+      base_hostname: jump
+    cachens.acanorex.io:
+      ansible_user: berto
+      ansible_host: 172.25.49.253
+      base_hostname: cachens
+
+dns_infra_hosts:
+  hosts:
+    cachens.acanorex.io:
+      ansible_user: berto
+      ansible_host: 172.25.49.253
+      base_hostname: cachens
+
+# KVM host groups
+# Purpose: 
+#   KVM(Kernel Virtual Machine) hosts.  Lets just call them
+#   virtualization hosts.  
+#   Because I play with a lot of technologies to simulate on-premises
+#   environments it is more suitable for my electric bill and wallet
+#   to minimize costs in hardware by virtualizing some workloads. 
+#   OpenStack or Kubernetest worker nodes on my lab do run on baremetal nodes
+#   which are not listed on this inventory since those are managed via their own
+#   respective lifecycle managers. 
+kvm_hosts:
+  hosts:
+    kvm01.acanorex.io:
+      ansible_user: berto
+      base_hostname: kvm01
+      reboot_after_updates: false
+    kvm02.acanorex.io:
+      ansible_user: berto
+      base_hostname: kvm02
+      reboot_after_updates: false
+
+# Red Hat Identity Manager (IDM) host group
+# Purposes:
+#   - I use Red Hat IDM for centralized authentication and to test
+#   LDAP authentication for cloud infrasructure components: eg. OpenStack,
+#   OpenShift, ect. 
+#   - Internal DNS resolver for lab artifacts.  
+#
+idm_hosts:
+  hosts:
+    idm.acanorex.io:
+      ansible_user: berto
+      base_hostname: idm
+
+# Utility host group
+# Purposes:
+#  This is my work-horse and its where all of my utilities reside
+#
+utility_hosts:
+  hosts:
+    utility.acanorex.io:
+      ansible_user: berto
+      base_hostname: utility
+
+# Plex group
+# Purposes:
+#  This is the vm that I use as my plex server
+#  for my home network
+plex_hosts:
+  hosts:
+    plex.acanorex.io:
+      ansible_user: root
+
+# Red Hat OpenStack Platform Director 
+# this is used for red hat openstack platform deployments
+#
+director_server:
+  hosts:
+     osp-dir.lab.acanorex.io:
+       ansible_host: 172.25.48.10
+       ansible_user: root
+
+# Bifrost server
+# This a machine where I am working with Openstack Bifrost to 
+# for baremetal provisioning
+bifrost_server:
+  hosts:
+    c9-bf01.lab.acanorex.io:
+       ansible_host: 172.16.254.252
+       ansible_user: root

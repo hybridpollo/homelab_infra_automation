@@ -1,0 +1,128 @@
+---
+# default  vars file for install-osp16-director
+domain: lab.acanorex.io
+sudo_group: wheel
+time_servers:
+   - clock.nyc.he.net
+   - clock.fmt.he.net
+time_zone: America/Chicago
+local_user_list:
+  - user_name: stack 
+    uid: 1001 
+# redhat cdn registration options
+# these variables have been moved 
+# to the ansible vault
+# {{ rhsm_org_id }}
+# {{ rhsm_activation_key }}
+rhsm_enable_registration: true
+rhsm_hostname: subscription.rhsm.redhat.com
+rhsm_port: 443
+rhsm_url_prefix: "/subscription"
+rhsm_sys_release_version: 8.4
+rhsm_repositories_enabled:
+  - rhel-8-for-x86_64-baseos-tus-rpms
+  - rhel-8-for-x86_64-appstream-tus-rpms
+  - rhel-8-for-x86_64-highavailability-tus-rpms
+  - ansible-2.9-for-rhel-8-x86_64-rpms 
+  - openstack-16.2-for-rhel-8-x86_64-rpms
+  - fast-datapath-for-rhel-8-x86_64-rpms
+rhsm_rpm_packages:
+  - python3-tripleoclient
+  - rhosp-director-images-x86_64
+  - rhosp-director-images-ipa-x86_64
+  - git
+  - bind-utils
+  - vim-enhanced
+  - tmux
+
+undercloud_short_hostname: osp-dir
+undercloud_user: stack
+undercloud_group: stack
+undercloud_home_path: /home/stack
+undercloud_dirs:
+  - rhosp_overcloud_deployment_images
+undercloud_basic_system_svcs:
+  - sshd
+  - chronyd
+reboot_after_updates: true
+
+# List of ssh keys are used to bootstrap git when enabled
+enable_git_clone: true
+github_ssh_priv_key: /home/arlaporte/.ssh/id_rsa
+github_ssh_pub_key: /home/arlaporte/.ssh/id_rsa.pub
+
+# Git repository to clone
+osp_templates_repo: git@github.com:hybridpollo/rhosp_templates.git
+osp_templates_branch: osp16_home_lab
+osp_templates_download_directory_name: rhosp_deployment
+
+# variables used for nova join
+# and tls everywhere
+enable_tls_everywhere: false
+idm_domain: voltron.xyz
+idm_realm: VOLTRON.XYZ
+idm_server: idm.voltron.xyz
+idm_user_principal: admin
+tls_everywhere_rpm_deps:
+  - python3-nss
+  - python3-novajoin
+
+# undercloud.conf parameters
+# these variables below are used to configure the undercloud.conf
+# not every variable is parametrized
+# please review the default file 
+# /usr/share/instack-undercloud/undercloud.conf.sample 
+# for all available parameters
+# overcloud domain if different from {{ domain}}
+overcloud_domain: "{{ domain }}"
+undercloud_local_interface: eth1
+undercloud_local_mtu: 1500
+undercloud_enable_uefi: false
+undercloud_enable_debug: false
+undercloud_enable_telemetry: false
+undercloud_enable_tempest: false
+undercloud_enable_ui: false
+undercloud_enable_clean_nodes: true
+undercloud_enable_clean_up: true
+undercloud_enable_selinux: true
+undercloud_enable_ipxe: true
+undercloud_enable_inspection_extras: true
+undercloud_container_cli: podman
+undercloud_container_images_file: "{{ undercloud_home_path }}/container_image_prepare.yml"
+undercloud_enable_custom_environment_file: false
+undercloud_custom_environment_file: "{{ undercloud_home_path }}/undercloud_custom_env.yml"
+undercloud_inspection_interface: br-ctlplane
+undercloud_local_subnet: ctlplane-subnet
+undercloud_local_ip: 172.25.47.2/24
+undercloud_public_vip: 172.25.47.3
+undercloud_admin_vip: 172.25.47.4
+undercloud_provisioning_cidr: 172.25.47.0/24
+undercloud_dhcp_provisioning_start: 172.25.47.10
+undercloud_dhcp_provisioning_end: 172.25.47.199
+undercloud_dhcp_inspection_start: 172.25.47.200
+undercloud_dhcp_inspection_end: 172.25.47.254
+undercloud_dhcp_gateway: 172.25.47.1
+undercloud_enable_masquerade: false
+undercloud_name_servers:
+  - 172.25.49.253
+  - 172.31.103.254
+undercloud_time_servers:
+   - clock.nyc.he.net
+   - clock.fmt.he.net
+undercloud_enable_routed_networks: false
+undercloud_routed_subnets_list:
+  - ctlplane-subnet
+undercloud_enabled_hardware_types:
+  - staging-ovirt
+  - ilo
+  - ipmi
+
+# container registry parameters
+undercloud_container_images_namespace: "registry.redhat.io/rhosp-rhel8"
+undercloud_container_registry_address: 172.25.47.2:8787
+undercloud_container_images_tag: 16.2.6
+undercloud_remote_registry_login: true
+# container registry username and password
+# are vaulted
+#container_registry_username: 
+#container_registry_password:

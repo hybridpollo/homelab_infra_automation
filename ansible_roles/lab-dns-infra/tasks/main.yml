@@ -1,0 +1,4 @@
+---
+  - include_tasks: set-packages-debian.yml
+  - include_tasks: configure-unbound-server.yml
+

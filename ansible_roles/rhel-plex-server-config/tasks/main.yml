@@ -1,0 +1,8 @@
+---
+- include_tasks: base-services.yml 
+  tags:
+    - base_services
+    - setup_nfs
+- include_tasks: configure-plex-services.yml
+  tags:
+    - configure_plex

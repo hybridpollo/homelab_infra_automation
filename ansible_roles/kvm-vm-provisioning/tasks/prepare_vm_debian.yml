@@ -1,0 +1,110 @@
+---
+- name: '[Debian VM] Check if existing root disk for {{ vm_base_name }}'
+  ansible.builtin.stat:
+    path: '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}'
+  register: root_disk
+  tags:
+    - create_vm
+
+- name: '[Debian VM] Exit if root disk exists in {{ vm_dest_disk_path }} for {{ vm_base_name }}'
+  ansible.builtin.fail:
+    msg: '!WARNING! Root disk for virtual machine exists in: {{ vm_dest_disk_path }} delete virtual machine or delete disk file'
+  when: root_disk.stat.exists
+  tags:
+    - create_vm
+
+- name: '[Debian VM] Preparing the ssh public key to be injected to virtual machine'
+  ansible.builtin.copy: 
+    content: '{{ vm_root_pub_key }}'
+    dest: /tmp/vm_root_pub_key
+    owner: root
+    group: root
+    mode: '0400'
+  tags:
+    - create_vm
+
+- name: '[Debian VM] Generating primary network configuration file template for {{ vm_if_dev }}'
+  ansible.builtin.template: 
+    src: debian-net-interface-primary.j2
+    dest: '/tmp/{{ vm_if_dev }}.network'
+  when: 
+    - vm_if_configure_ip == True
+    - vm_os_family == 'debian'
+  tags:
+    - create_vm
+
+- name: '[Debian VM] Generating resolved.conf configuration file template'
+  ansible.builtin.template: 
+    src: debian-net-resolv-conf.j2
+    dest: /tmp/resolved.conf
+  when: 
+    - vm_if_configure_ip == True
+    - vm_os_family == 'debian'
+  tags:
+    - create_vm
+
+- name: '[Debian VM] Generating additional network interface configuration file templates'
+  ansible.builtin.template: 
+    src: debian-extra-net-interfaces.j2
+    dest: '/tmp/{{ item.vm_if_dev }}.network'
+  loop: '{{ vm_extra_if_dev }}'
+  when: 
+    - vm_configure_extra_if == True
+    - vm_os_family == 'debian'
+  tags:
+    - create_vm
+
+- name: '[Debian VM] Preparing root disk for {{ vm_base_name }}'
+  ansible.builtin.shell: |
+    qemu-img convert -f qcow2 -O qcow2 '{{ vm_base_src_disk_path }}/{{ vm_base_src_image }}' '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}'
+  args:
+    executable: /bin/bash
+  when: 
+    - vm_os_family == 'debian'
+  tags:
+    - create_vm
+
+- name: '[Debian VM] Resizing root disk to {{ vm_root_disk_gb }}GB for {{ vm_base_name }}'
+  ansible.builtin.shell: |
+    export LIBGUESTFS_BACKEND=direct ;
+    qemu-img resize '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' '{{ vm_root_disk_gb }}G'
+  args:
+    executable: /bin/bash
+  when: 
+    - vm_os_family == 'debian'
+  tags:
+    - prepare_vm
+    - create_vm
+
+- name: '[Debian VM] Perform customizations for virtual machine {{ vm_base_name }}'
+  ansible.builtin.shell: |
+    export LIBGUESTFS_BACKEND=direct;
+    virt-customize -q \
+    -a '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
+    --hostname "{{ vm_fqdn_name }}" \
+    --root-password 'password:{{ vm_root_pw }}' \
+    --ssh-inject 'root:file:/tmp/vm_root_pub_key' \
+    --delete '/etc/netplan/*.yaml' \
+    --run-command 'apt-get update ; apt-get install -y  openssh-server' \
+    {% if vm_if_configure_ip is sameas true %}
+    --copy-in /tmp/{{ vm_if_dev }}.network:/etc/systemd/network/ \
+    --copy-in /tmp/resolved.conf:/etc/systemd/ \
+    {%endif %}
+    {% if vm_configure_extra_if is sameas true %}
+    {% for i in vm_extra_if_dev %}
+    --copy-in /tmp/{{ i.vm_if_dev }}.network:/etc/systemd/network/ \
+    {% endfor %}
+    {%endif %}
+  args:
+    executable: /bin/bash
+  when: 
+    - vm_os_family == 'debian'
+  tags:
+    - create_vm
+
+- name: Clean up the public ssh key from the KVM host
+  ansible.builtin.file:
+    path: /tmp/vm_root_pub_key
+    state: absent
+  tags:
+    - create_vm

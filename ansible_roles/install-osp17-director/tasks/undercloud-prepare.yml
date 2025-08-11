@@ -1,0 +1,54 @@
+---
+- name: Installing Tripleo rpm packages
+  ansible.builtin.dnf:
+    name: '{{ undercloud_tripleo_rpms }}'
+    state: installed
+    update_cache: yes
+  register: result
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  when:
+    - ansible_os_family == 'RedHat'
+    - undercloud_tripleo_rpms is defined
+    - undercloud_tripleo_rpms | length > 0
+  tags:
+    - undercloud_prepare
+
+- name: Installing rpm dependencies for TLS-E
+  ansible.builtin.dnf:
+    name: '{{ tls_everywhere_rpms }}'
+    state: installed
+    update_cache: yes
+  register: result
+  when: 
+    - ansible_os_family == 'RedHat'
+    - enable_tls_everywhere|bool == True
+  until: result is succeeded
+  retries: 10
+  delay: 5
+  tags:
+    - undercloud_prepare
+
+- name: Verifying the undercloud user ({{ undercloud_user }}) exists in system
+  ansible.builtin.getent:
+    database: passwd
+    key: '{{ undercloud_user }}' 
+  register: uc_user_present 
+  ignore_errors: True
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags:
+    - undercloud_prepare
+
+- name: Exit if undercloud user {{ undercloud_user }} does not exists
+  ansible.builtin.fail:
+    msg: 
+      - 'Aborting: undercloud user {{ undercloud_user }} does not exists in the system...this is required!'
+  when:
+    - ansible_os_family == 'RedHat'
+    - uc_user_present.failed | bool == True
+  tags:
+    - undercloud_prepare
+
+   

@@ -1,0 +1,207 @@
+---
+- name: '[Red Hat VM] Check if existing root disk for {{ vm_base_name }} exists..'
+  ansible.builtin.stat:
+    path: '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}'
+  when: 
+    - vm_os_family == 'redhat'
+  register: root_disk
+  tags:
+    - create_vm
+
+- name: '[Red Hat VM] Exit if root disk exists in {{ vm_dest_disk_path }} for {{ vm_base_name }}'
+  ansible.builtin.fail:
+    msg: '!WARNING! Root disk for virtual machine exists in: {{ vm_dest_disk_path }} delete virtual machine or delete disk file'
+  when: 
+    - root_disk.stat.exists
+    - vm_os_family == 'redhat'
+  tags:
+    - create_vm
+
+- name: '[Red Hat VM] Preparing the ssh public key to be injected to virtual machine.'
+  ansible.builtin.copy:
+    content: '{{ vm_root_pub_key }}'
+    dest: /tmp/vm_root_pub_key
+    owner: root
+    group: root
+    mode: '0400'
+  when: 
+    - vm_os_family == 'redhat'
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Generating the NetworkManager.conf file from template'
+  ansible.builtin.template: 
+    src: NetworkManager.conf.j2
+    dest: /tmp/NetworkManager.conf
+    mode: 0400
+    owner: root
+    group: root
+  when: 
+    - vm_if_configure_ip == True
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Generate uuid to be used for network manager keyfile template'
+  ansible.builtin.shell: |
+    uuidgen
+  register: generated_uuid
+  when: 
+    - vm_if_configure_ip == True
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Set fact for uuid'
+  set_fact:
+    vm_if_uuid: '{{ generated_uuid.stdout }}'
+  when: 
+    - vm_if_configure_ip == True
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Generating primary network configuration file template for {{ vm_if_dev }}'
+  ansible.builtin.template: 
+    src: nm-keyfile-primary.j2
+    dest: '/tmp/{{ vm_if_dev }}.nmconnection'
+    mode: 0400
+    owner: root
+    group: root
+  when: 
+    - vm_if_configure_ip == True
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Generate additional uuids for extra nics'
+  ansible.builtin.shell: |
+    uuidgen
+  register: generated_uuid
+  when: 
+    - vm_configure_extra_if == True
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Set fact for uuid for extra nics'
+  set_fact:
+    vm_if_uuid: '{{ generated_uuid.stdout }}'
+  when: 
+    - vm_configure_extra_if == True
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Generating additional network interface configuration file templates'
+  ansible.builtin.template: 
+    src: nm-keyfile-extra.j2
+    dest: '/tmp/{{ item.vm_if_dev }}.nmconnection'
+    mode: 0400
+    owner: root
+    group: root
+  loop: '{{ vm_extra_if_dev }}'
+  when: 
+    - vm_configure_extra_if == True
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+# Removing this functionality until I can refactor
+# it to work with network manager keyfiles 
+#- name: '[Red Hat VM ] Generating static network interface routes from templates'
+#  ansible.builtin.template: 
+#    src: extra-routes.j2
+#    dest: '/tmp/route-{{ item.routeif }}'
+#  loop: '{{ vm_extra_routes }}'
+#  when: 
+#    - vm_enable_extra_routes == True
+#    - vm_os_family == redhat
+#  tags:
+#    - create_vm
+
+- name: '[Red Hat VM] Preparing root disk for {{ vm_base_name }}'
+  ansible.builtin.shell: |
+    qemu-img create -f qcow2 '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' '{{ vm_root_disk_gb }}G'
+  args:
+    executable: /bin/bash
+  when: 
+    - vm_os_family == 'redhat'
+  tags:
+    - create_vm
+
+- name: '[Red Hat VM] Resizing root disk to {{ vm_root_disk_gb }}GB for {{ vm_base_name }}'
+  ansible.builtin.shell: |
+    export LIBGUESTFS_BACKEND=direct ;
+    virt-resize --expand '{{ vm_root_disk_partition }}' \
+    '{{ vm_base_src_disk_path }}/{{ vm_base_src_image }}' '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}'
+  args:
+    executable: /bin/bash
+  when: 
+    - vm_os_family == 'redhat'
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Perform initial customizations for virtual machine {{ vm_base_name }}'
+  ansible.builtin.shell: |
+    export LIBGUESTFS_BACKEND=direct;
+    virt-customize -q \
+    -a '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
+    --hostname "{{ vm_fqdn_name }}" \
+    {% if vm_portal_registration_enable is sameas true %}
+    --sm-register \
+    --sm-credentials '{{ vm_portal_user }}:password:{{ vm_portal_pw }}' \
+    --sm-attach pool:'{{ vm_portal_pool}}' \
+    --install lvm2 \ 
+    --sm-unregister \ 
+    {%endif %}
+    --uninstall cloud-init \
+    --root-password 'password:{{ vm_root_pw }}' \
+    --ssh-inject 'root:file:/tmp/vm_root_pub_key' \
+    --selinux-relabel \
+    --run-command 'rm -f /etc/NetworkManager/system-connections/* ; rm -f /etc/sysconfig/network-scripts/ifcfg-*' 
+  args:
+    executable: /bin/bash
+  when: 
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: '[Red Hat 8|9 VM] Perform network customizations for virtual machine {{ vm_base_name }}'
+  ansible.builtin.shell: |
+    export LIBGUESTFS_BACKEND=direct;
+    virt-customize -q \
+    -a '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}' \
+    --no-network \
+    --copy-in /tmp/NetworkManager.conf:/etc/NetworkManager \
+    {% if vm_if_configure_ip is sameas true %}
+    --copy-in /tmp/{{ vm_if_dev }}.nmconnection:/etc/NetworkManager/system-connections \
+    {%endif %}
+    {% if vm_configure_extra_if is sameas true %}
+    {% for i in vm_extra_if_dev %}
+    --copy-in /tmp/{{ i.vm_if_dev }}.nmconnection:/etc/NetworkManager/system-connections \
+    {% endfor %}
+    {%endif %}
+    --selinux-relabel
+  args:
+    executable: /bin/bash
+  when: 
+    - vm_os_family == 'redhat'
+    - ansible_distribution_major_version|int >= 8
+  tags:
+    - create_vm
+
+- name: Clean up the public ssh key from the KVM host
+  ansible.builtin.file:
+    path: /tmp/vm_root_pub_key
+    state: absent
+  tags:
+    - create_vm

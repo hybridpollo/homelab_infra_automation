@@ -1,0 +1,54 @@
+---
+- name: Configure the chrony ntp client from template
+  ansible.builtin.template:
+    src: templates/chrony_server.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0440
+  notify: 
+     - restart_chrony 
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_services
+
+- name: Configure the sshd server from template
+  ansible.builtin.template:
+    src: templates/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0600
+  notify: 
+     - restart_sshd
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_services
+
+- name: Enable system services as required
+  ansible.builtin.service: 
+    name: '{{ item }}'
+    state: started
+    enabled: true 
+  loop: '{{ enabled_system_services if enabled_system_services is iterable else [] | list }}'
+  when: 
+    - ansible_os_family == 'RedHat'
+    - enabled_system_services is defined
+    - enabled_system_services | length > 0
+  tags: 
+    - base_services
+
+- name: Disable system services as required
+  ansible.builtin.service: 
+    name: '{{ item }}'
+    state: stopped
+    enabled: false
+  loop: '{{ disabled_system_services if disabled_system_services is iterable else [] | list }}'
+  when: 
+    - ansible_os_family == 'RedHat'
+    - disabled_system_services is defined
+    - disabled_system_services | length > 0
+  tags: 
+    - base_services

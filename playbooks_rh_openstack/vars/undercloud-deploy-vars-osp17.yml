@@ -1,0 +1,6 @@
+# default variables defined in 
+# osp16 => ansible_roles/install-osp16-director/defaults/main.yml
+# osp17 => ansible_roles/install-osp17-director/defaults/main.yml
+# Variable precedence occures at the playbook level 
+# On my labs I attempt to reduce the depencency on inventory host variables
+# unless absolutely necessary

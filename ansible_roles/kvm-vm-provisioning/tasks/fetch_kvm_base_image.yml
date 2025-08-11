@@ -1,0 +1,14 @@
+---
+- name: 'Ensure the temporary image build directory {{ vm_base_src_disk_path }} exists in host'
+  ansible.builtin.file:
+    path: '{{ vm_base_src_disk_path }}'
+    state: directory
+  tags:
+    - fetch_kvm_images
+
+- name: 'Fetch os image from {{ vm_image_repo_url }}/{{ vm_base_src_image }} for vm build'
+  ansible.builtin.get_url:
+    url: '{{ vm_image_repo_url }}/{{ vm_base_src_image }}'
+    dest: '{{ vm_base_src_disk_path }}/{{ vm_base_src_image }}'
+  tags:
+    - fetch_kvm_images

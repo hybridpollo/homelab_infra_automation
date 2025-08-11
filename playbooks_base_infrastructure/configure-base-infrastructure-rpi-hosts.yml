@@ -1,0 +1,23 @@
+---
+- name: 'Initiate base configuration of a RaspberryPi systems'
+  hosts: rpi_hosts
+  tasks:
+    - name: 'Importing the roles needed for this play...'
+      ansible.builtin.import_role:
+        name: rpi-host-config
+  vars_files:
+    - vars/vaulted/vaulted-vars.yml
+  tags:
+    - rpi_host_config 
+
+- name: 'Configuring the dns infra services on host'
+  hosts: dns_infra_hosts
+  tasks:
+    - name: 'Importing the roles needed for this play...'
+      ansible.builtin.import_role:
+        name: lab-dns-infra
+  vars_files:
+    - vars/vaulted/vaulted-vars.yml
+  tags:
+    - setup_unbound
+    - rpi_host_config

@@ -1,0 +1,49 @@
+# default vars file for host-setup-common
+---
+domain: lab.acanorex.io
+base_hostname: linux-host
+sudo_group: wheel
+time_servers:
+   - clock.nyc.he.net
+   - clock.fmt.he.net
+time_zone: America/Chicago
+
+#local_user_list:
+#  - user_name: berto
+#    uid: 1000 
+
+# redhat cdn registration options
+# these variables have been moved 
+# to the ansible vault
+# {{ rhsm_org_id }}
+# {{ rhsm_activation_key }}
+rhsm_enable_registration: true
+rhsm_sys_release_version: 9
+rhsm_hostname: subscription.rhsm.redhat.com
+rhsm_port: 443
+rhsm_url_prefix: "/subscription"
+rhsm_repositories_enabled:
+  - rhel-9-for-x86_64-baseos-rpms
+  - rhel-9-for-x86_64-appstream-rpms
+rhel_pkgs_to_remove: []
+rhel_pkgs_to_install:
+  - bind-utils
+  - yum-utils
+  - vim-enhanced
+  - tmux
+  - NetworkManager
+  - ipa-client
+reboot_after_updates: False
+enabled_system_services:
+  - chronyd
+  - sshd
+disabled_system_services: []
+
+# base configuration for host networking
+# in the case of single purpose hosts like
+# virtual machines..basic ip address 
+# assignment is assumed
+# 
+# for kvm/virt hosts those have a slightly more complex
+# and descriptive network layout including bridges,
+# vlan/tagged interfaces

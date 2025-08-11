@@ -1,0 +1,128 @@
+---
+# These tasks run against the virtual machine 
+# after deployment. These days will fail if the ssh public
+# keys are not injected properly during the vm preparation
+# see the prepare_vm.yaml file in this directory
+# the intention of these tasks is to configure an extra 
+# disk as an lvm filesystem 
+
+- name: 'Verify disk {{ vm_extra_disk_physname }} is present in OS'
+  stat:
+    path: '{{ vm_extra_disk_physname }}'
+  register: is_disk
+  when: 
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Exit if disk {{ vm_extra_disk_physname }} does not exist'
+  fail:
+    msg: 'ERROR: Disk {{ vm_extra_disk_physname }} not detected'
+  when: 
+    - is_disk.stat.exists == False
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Retrieve partition information from {{ vm_extra_disk_physname }}'
+  parted:
+    device: '{{ vm_extra_disk_physname }}'
+    state: info
+  register: disk_info
+  when: 
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Exit if disk {{ vm_extra_disk_physname }} contains partitions'
+  fail:
+    msg: 'ERROR: Partitions detected in {{ vm_extra_disk_physname }}'
+  when: 
+    - disk_info.partitions | length > 0
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Prepare {{ vm_extra_disk_physname }} for logical volume creation'
+  parted:
+    device: '{{ vm_extra_disk_physname }}'
+    number: 1
+    part_start: 0%
+    part_end: 100%
+    flags: [ lvm ]
+    state: present
+  register: part_create
+  when: 
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Create volume group {{ vm_extra_disk_vg_name }}.'
+  lvg:
+    vg: '{{ vm_extra_disk_vg_name }}'
+    pvs: '{{ vm_extra_disk_physname }}1'
+    state: present
+  register: vg_create
+  when: 
+    - part_create is succeeded
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Create logical volume {{ vm_extra_disk_lv_name }}'
+  lvol:
+    vg: '{{ vm_extra_disk_vg_name }}'
+    lv: '{{ vm_extra_disk_lv_name }}'
+    size: 100%FREE
+    state: present
+  register: lv_create
+  when: 
+    - vg_create is succeeded
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: Format volume
+  filesystem:
+    fstype: xfs
+    dev: '/dev/{{ vm_extra_disk_vg_name }}/{{ vm_extra_disk_lv_name }}'
+  register: fs_create
+  when:
+    - lv_create is succeeded
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Create the mount point directory {{ vm_extra_disk_mount_point }}'
+  file:
+    path: '{{ vm_extra_disk_mount_point }}'
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - fs_create is succeeded
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch
+
+- name: 'Ensure extra disk is mounted to {{ vm_extra_disk_mount_point }}'
+  mount:
+    path: '{{ vm_extra_disk_mount_point }}'
+    src: '/dev/{{ vm_extra_disk_vg_name }}/{{ vm_extra_disk_lv_name }}'
+    fstype: xfs
+    state: mounted
+  when:
+    - vm_enable_extra_disk|bool == true
+    - ansible_os_family == 'RedHat'
+  tags:
+    - vm_post_launch

@@ -1,0 +1,90 @@
+---
+- name: Remove the cloud-init rpm from the host before applying updates
+  ansible.builtin.dnf:
+    name: cloud-init
+    state: absent
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates
+
+- name: (CentOS Only) Enable the codeready builders repo as pre-requisite for epel repo install
+  community.general.dnf_config_manager:
+    name: crb
+    state: enabled
+  when: 
+    - ansible_distribution == 'CentOS'
+  tags:
+    - system_updates
+
+- name: (CentOS Only) Install epel-release
+  ansible.builtin.dnf:
+    name: epel-release
+    state: latest
+  when: 
+    - ansible_distribution == 'CentOS'
+  tags:
+    - system_updates
+
+- name: Update all installed packages
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+  register: is_updated
+  until: is_updated is succeeded
+  retries: 10
+  delay: 5
+  when: 
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates
+
+- name: Reboot after updates
+  ansible.builtin.shell: |
+    sleep 5 && systemctl reboot
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: 
+    - is_updated is changed
+    - reboot_after_updates|bool == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates
+
+- name: Wait for host to become responsive after reboot
+  ansible.builtin.wait_for_connection:
+    connect_timeout: 30
+    sleep: 5
+    delay: 60
+    timeout: 300 
+  when: 
+    - is_updated is changed
+    - reboot_after_updates|bool == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - system_updates
+
+- name: Remove not needed packages from host
+  ansible.builtin.dnf:
+    name: '{{ rhel_pkgs_to_remove | default(omit) }}'
+    state: absent
+  when: 
+    - ansible_os_family == 'RedHat'
+    - rhel_pkgs_to_remove is defined 
+    - rhel_pkgs_to_remove | length > 0
+  tags:
+    - system_updates
+
+- name: Install required packages on host
+  ansible.builtin.dnf:
+    name: '{{ rhel_pkgs_to_install | default(omit) }}'
+    state: present
+  when: 
+    - ansible_os_family == 'RedHat'
+    - rhel_pkgs_to_install is defined 
+    - rhel_pkgs_to_install | length > 0
+  tags:
+    - system_updates
+

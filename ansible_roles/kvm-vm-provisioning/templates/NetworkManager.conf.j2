@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+# This network manager configuration file 
+# prevents the auto default configuration
+# of any interface as we are using static
+# network manager keyfiles in kvm vms
+
+[main]
+plugins=keyfile,ifcfg-rh
+no-auto-default=*
+ignore-carrier=*
+
+[logging]

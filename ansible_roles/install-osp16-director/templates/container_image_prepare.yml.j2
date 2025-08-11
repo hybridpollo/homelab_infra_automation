@@ -1,0 +1,17 @@
+# {{ ansible_managed }}
+#
+
+parameter_defaults:
+  ContainerImagePrepare:
+  - push_destination: true
+    set:
+      name_prefix: openstack-
+      name_suffix: ''
+      namespace: {{ undercloud_container_images_namespace }}
+      rhel_containers: false
+      tag: {{ undercloud_container_images_tag }}
+  ContainerImageRegistryLogin: {{ undercloud_remote_registry_login }}
+  ContainerImageRegistryCredentials:
+    registry.redhat.io:
+      {{ container_registry_username }}: {{ container_registry_password }} 
+

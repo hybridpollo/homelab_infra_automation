@@ -1,0 +1,58 @@
+# The tasks defined in this file serve the purpose to register
+# the hosts to Red Hats CDN for the purpose of accessing RPM content
+---
+- name: 'Get current Red Hat CDN registration status'
+  ansible.builtin.command: subscription-manager status
+  register: reg_status
+  ignore_errors: yes
+  changed_when: false
+  when: 
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  tags:
+    - rhsm_register
+
+- name: 'Subscribe system to the Red Hat CDN'
+  community.general.redhat_subscription:
+    server_hostname: '{{ rhsm_hostname | default("subscription.rhsm.redhat.com") }}'
+    server_port: '{{ rhsm_port | default(443) }}'
+    server_prefix: '{{ rhsm_url_prefix | default("/subscription") }}'
+    org_id: '{{ rhsm_org_id }}'
+    activationkey: '{{ rhsm_activation_key }}'
+    state: present
+    force_register: yes
+    release: '{{ rhsm_sys_release_version | default(8) }}'
+  register: rhsm_reg
+  when: 
+    - '"Unknown" in reg_status.stdout'
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  until: rhsm_reg.failed is false 
+  retries: 3
+  delay: 5
+  tags:
+    - rhsm_register
+
+- name: 'Disable all repositories not needed'
+  community.general.rhsm_repository:
+    name: '*'
+    state: disabled
+  when: 
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  retries: 3
+  delay: 5
+  tags:
+    - rhsm_register
+
+- name: 'Enable the configured repositories from the vars file'
+  community.general.rhsm_repository:
+    name: '{{ rhsm_repositories_enabled }}'
+    state: enabled
+  when: 
+    - rhsm_enable_registration == True
+    - ansible_os_family == 'RedHat'
+  retries: 3
+  delay: 5
+  tags:
+    - rhsm_register

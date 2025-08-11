@@ -1,0 +1,68 @@
+---
+- name: Configuring base RHEL kvm hosts
+  hosts: kvm_hosts
+  become: True
+  roles:
+    - role: host-setup-common
+  vars:
+    domain: acanorex.io
+    rhsm_sys_release_version: 9
+    rhsm_repositories_enabled:
+      - rhel-9-for-x86_64-baseos-rpms
+      - rhel-9-for-x86_64-appstream-rpms
+      - codeready-builder-for-rhel-9-x86_64-rpms
+    rhel_pkgs_to_install:
+      - NetworkManager
+      - bind-utils
+      - yum-utils
+      - tmux
+      - vim-enhanced
+      - qemu-kvm
+      - libvirt
+      - virt-install 
+      - guestfs-tools
+      - NetworkManager
+      - ipa-client
+      - sysstat
+      - pcp-system-tools
+  vars_files:
+    - vars/vaulted/vaulted-vars.yml
+
+- name: Configuring base RHEL IDM hosts
+  hosts: idm_hosts
+  become: True
+  roles:
+    - role: host-setup-common
+  vars:
+    domain: acanorex.io
+    rhsm_sys_release_version: 9
+    rhsm_repositories_enabled:
+      - rhel-9-for-x86_64-baseos-rpms
+      - rhel-9-for-x86_64-appstream-rpms
+    reboot_after_updates: true
+  vars_files:
+    - vars/vaulted/vaulted-vars.yml
+
+- name: Configuring base RHEL utility host
+  hosts: utility_hosts
+  become: True
+  roles:
+    - role: host-setup-common
+  vars:
+    domain: acanorex.io
+    rhsm_sys_release_version: 9
+    rhsm_repositories_enabled:
+      - rhel-9-for-x86_64-baseos-rpms
+      - rhel-9-for-x86_64-appstream-rpms
+      - codeready-builder-for-rhel-9-x86_64-rpms
+      - ansible-automation-platform-2.4-for-rhel-9-x86_64-rpms
+    rhel_pkgs_to_install:
+      - NetworkManager
+      - bind-utils
+      - yum-utils
+      - tmux
+      - vim-enhanced
+      - git
+    reboot_after_updates: false
+  vars_files:
+    - vars/vaulted/vaulted-vars.yml

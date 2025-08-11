@@ -1,0 +1,57 @@
+---
+- name: Configure chrony ntp client
+  ansible.builtin.template:
+    src: templates/chrony_server.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0440
+  when: ansible_os_family == 'Debian'
+  notify: 
+    - restart_chrony 
+  tags:
+    - configure_ntp 
+
+- name: Configure sshd server 
+  ansible.builtin.template:
+    src: templates/sshd_server.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0440
+  when: ansible_os_family == 'Debian'
+  notify: 
+    - restart_sshd
+  tags:
+    - configure_ssh
+
+- name: Stop and disable services not required
+  ansible.builtin.service: 
+    name: '{{ item }}'
+    state: stopped
+    enabled: no
+  loop: '{{ debian_svcs_to_disable }}'
+  tags:
+    - disable_svcs
+
+- name: Start and enable services required
+  ansible.builtin.service: 
+    name: '{{ item }}'
+    state: started
+    enabled: true 
+  loop: '{{ debian_svcs_to_enable }}'
+  when: ansible_os_family == 'Debian'
+  tags:
+    - enable_svcs
+
+- name: Configure base UFW allow rules
+  ansible.builtin.ufw:
+    rule: allow
+    port: '{{ item.port_number }}'
+    proto: '{{ item.protocol }}'
+    from_ip: '{{ item.source_addr }}'
+    state: enabled
+  loop: '{{ ufw_allowed_ports }}'
+  when: ansible_os_family == 'Debian'
+  tags:
+    - configure_ufw_base

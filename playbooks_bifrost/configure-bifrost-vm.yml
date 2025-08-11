@@ -1,0 +1,71 @@
+---
+- name: Configuring server for the installation of OpenStack Bifrost
+  hosts: bifrost_server
+  become: True
+  roles:
+    - host-setup-common
+    - centos-bifrost
+  vars:
+    # vars for role => host-setup-common
+    domain: lab.acanorex.io
+    base_hostname: c9-bf01
+    sudo_group: sudo
+    time_servers:
+       - clock.nyc.he.net
+       - clock.fmt.he.net
+    time_zone: America/Chicago
+    local_user_list:
+      - user_name: bifrost
+        uid: 1101
+    # for bifrost installs I use centos which
+    # does not use red hat subscription manager
+    #
+    rhsm_enable_registration: False
+    reboot_after_updates: True
+    rhel_pkgs_to_remove:
+      - postfix
+      - ntpd
+      - cloud-init
+    rhel_pkgs_to_install:
+      - openssh-clients
+      - openssh-server
+      - chrony
+      - curl
+      - wget
+      - tcpdump
+      - iproute
+      - firewalld
+      - sysstat
+      - ethtool
+      - bind-utils
+      - vim-enhanced
+      - tmux
+      - git
+      - python3
+    enabled_system_services:
+      - chronyd
+      - sshd
+      - firewalld
+    disabled_system_services: []
+
+    # vars for  role => centos-bifrost
+    bf_install_user: bifrost
+    bf_install_path: /home/{{ bf_install_user }}/bifrost_install
+    bf_repo: https://opendev.org/openstack/bifrost
+    bf_repo_branch: master
+    bf_network_interface: eth1
+    bf_dnsmasq_router: 172.25.46.1
+    bf_dnsmasq_dns_servers:
+      - 172.25.49.253
+      - 172.31.103.254
+    bf_enable_dhcp: true
+    bf_inventory_dhcp: true
+    bf_dhcp_provider: "none"
+    bf_dhcp_pool_start: 172.25.46.10
+    bf_dhcp_pool_end: 172.25.46.100
+    bf_dhcp_lease_time: "infinite"
+    bf_dhcp_static_mask: 255.255.255.0
+    bf_default_boot_mode: bios
+    bf_enable_cleaning: false
+  vars_files:
+    - vars/vaulted/bifrost-vaulted-vars.yml

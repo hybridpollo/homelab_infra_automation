@@ -1,0 +1,86 @@
+---
+- name: Deploy the unbound.conf configuration to hosts 
+  template:
+     src: unbound.conf.j2
+     dest: /etc/unbound/unbound.conf
+     owner: root
+     group: root
+     mode: 0640
+  when: 
+    - ansible_os_family == 'Debian'
+    - "'dns_infra_hosts' in group_names"
+  notify: restart_unbound
+  tags: 
+    - install_unbound
+
+- name: Ensure unbound logfile exists
+  copy:
+    content: ""
+    dest: /var/log/unbound.log
+    owner: unbound
+    group: unbound
+    mode: 0640
+    force: no
+  when: 
+    - ansible_os_family == 'Debian'
+    - "'dns_infra_hosts' in group_names"
+  tags: 
+    - install_unbound
+
+- name: Deploy the logrotate configuration for unbound to host
+  template:
+     src: unbound_logrotate.j2
+     dest: /etc/logrotate.d/unbound
+     owner: root
+     group: root
+     mode: 0644
+  when: 
+    - ansible_os_family == 'Debian'
+    - "'dns_infra_hosts' in group_names"
+  tags: 
+    - install_unbound
+
+- name: Check syntax on unbound.conf before starting service
+  command: unbound-checkconf /etc/unbound/unbound.conf
+  register: unbound_conf_check
+  when: 
+    - ansible_os_family == 'Debian'
+    - "'dns_infra_hosts' in group_names"
+  tags: 
+    - install_unbound
+
+- name: Fail if there are issues with the unbound.conf syntax
+  fail:
+    msg: 'Error: /etc/unbound/unbound.conf syntax is invalid'
+  when: 
+    - unbound_conf_check.rc != 0
+    - ansible_os_family == 'Debian'
+    - "'dns_infra_hosts' in group_names"
+  tags: 
+    - install_unbound
+
+- name: Ensure unbound service started and enabled
+  service:
+     name: unbound
+     state: started
+     enabled: true
+  when: 
+    - ansible_os_family == 'Debian'
+    - "'dns_infra_hosts' in group_names"
+  tags: 
+    - install_unbound
+
+- name: UFW allow dns services ports
+  ufw:
+    rule: allow
+    port: '{{ item.port_number }}'
+    proto: '{{ item.protocol }}'
+    from_ip: '{{ item.source_addr }}'
+    state: enabled
+  loop: '{{ ufw_allowed_ports }}'
+  notify: restart_ufw
+  when: 
+    - ansible_os_family == 'Debian'
+    - "'dns_infra_hosts' in group_names"
+  tags:
+    - install_unbound

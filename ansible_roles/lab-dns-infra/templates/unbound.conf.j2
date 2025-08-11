@@ -1,0 +1,109 @@
+#{{ ansible_managed }}
+# Configured for {{ ansible_nodename }}
+# See unbound.conf(5) man page, version 1.6.0.
+
+server:
+    # enable unbound control
+    # Use the root servers key for DNSSEC
+    #auto-trust-anchor-file: "/var/lib/unbound/root.key"
+
+    # Enable logs
+    chroot: ""
+    verbosity: 1
+    log-queries: yes
+    logfile: /var/log/unbound.log
+
+    # Respond to DNS requests on all interfaces
+    interface: {{ ansible_default_ipv4.address }}
+
+    # DNS request port, IP and protocol
+    port: 53
+    do-ip4: yes
+    do-ip6: no
+    do-udp: yes
+    do-tcp: no
+
+    # hide identity and version
+    hide-identity: yes
+    hide-version: yes
+
+    # Authorized IPs to access the DNS Server
+{% for auth_nets in unbound_authorized_nets %}
+    access-control: {{ auth_nets }} allow
+{% endfor %}
+
+    # TTL Min (Seconds)
+    cache-min-ttl: {{ unbound_cache_min_ttl }}
+
+    # TTL Max (Seconds)
+    cache-max-ttl: {{ unbound_cache_max_ttl }}
+
+    # Enable the prefetch
+    prefetch: yes
+    prefetch-key: yes
+
+    # Number of maximum threads to use
+    num-threads: {{ unbound_threads | default('4') }}
+
+    ### Tweaks and optimizations
+    # Number of slabs to use (Must be a multiple of num-threads value)
+    msg-cache-slabs: {{ unbound_cache_slabs }}
+    rrset-cache-slabs: {{ unbound_cache_slabs }}
+    infra-cache-slabs: {{ unbound_cache_slabs }}
+    key-cache-slabs: {{ unbound_cache_slabs }}
+
+    # Cache and buffer size (in mb)
+    rrset-cache-size: 100m
+    msg-cache-size: 100m
+    so-rcvbuf: 1m
+
+    # Add an unwanted reply threshold to clean the cache and avoid when possible a DNS Poisoning
+    unwanted-reply-threshold: 10000
+
+    # Authorize or not the localhost requests
+    do-not-query-localhost: no
+   
+    # Make sure your DNS Server treat your local network requests
+    # Give IPv4 of IPv6 addresses or classless subnets. 
+    # These are addresses on your private network, and are not 
+    # allowed to be returned for public internet names.
+{% for addr in unbound_authorized_nets %}
+    private-address: {{ addr }}
+{% endfor %}
+
+    # Allow this domain, and all its subdomains to contain 
+    # private addresses. Give multiple times to allow multiple
+    # domain names to contain private addresses.   
+{% for domain in dns_private_domains %}
+    private-domain: {{ domain }}
+{% endfor %}
+
+    # Configure a local zone. The type determines the answer to give
+    # if there is no match from local-data. This is being used to allow
+    # unbound to handle PTR records
+{% for lz in dns_local_zones %}
+    local-zone: "{{ lz }}." nodefault
+{% endfor %}
+
+# Zones and forward dns server addresses
+{% for item in unbound_forward_zones %}
+forward-zone: 
+   name: "{{ item.name }}."
+{% if item.dns_addr_2|length > 0  %}
+   forward-addr: {{ item.dns_addr_1 }}
+   forward-addr: {{ item.dns_addr_2 }}
+{% else %}
+   forward-addr: {{ item.dns_addr_1 }}
+{% endif %}
+{% endfor %}
+
+# Forward everything else to the interwebs
+forward-zone:
+   name: "."
+{% for x in unbound_upstream_forwarding_servers %}
+   forward-addr: {{ x }}
+{% endfor %}
+
+remote-control:
+   control-enable: yes
+#ENDFILE

@@ -1,0 +1,18 @@
+---
+- name: Configuring and Deploying a Red Hat OpenStack Platform 16 Undercloud
+  hosts: director_server
+  vars:
+    enable_git_clone: true
+    osp_templates_repo: git@github.com:hybridpollo/rhosp_templates.git
+    osp_templates_branch: osp16_home_lab
+    osp_templates_download_directory_name: rhosp_deployment
+    github_ssh_priv_key: /home/arlaporte/.ssh/id_rsa
+    github_ssh_pub_key: /home/arlaporte/.ssh/id_rsa.pub
+  vars_files:
+    - vars/undercloud-deploy-vars-osp16.yml
+    - vars/vaulted/undercloud-deploy-vars-osp16.yml
+  tasks:
+    - name: Import install-osp16-director role
+      include_role:
+       name: install-osp16-director
+

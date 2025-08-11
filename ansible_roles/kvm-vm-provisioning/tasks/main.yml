@@ -1,0 +1,31 @@
+# tasks for the kvm-vm-provisioning role
+#
+---
+- include_tasks: pre_checks.yml
+  when:
+    - '"delete_vm" not in ansible_run_tags'
+
+- include_tasks: delete_vm.yml
+  when: '"delete_vm" in ansible_run_tags'
+
+- include_tasks: fetch_kvm_base_image.yml
+  when: '"delete_vm" not in ansible_run_tags'
+
+- include_tasks: prepare_vm_redhat.yml
+  when: 
+    - vm_os_family == 'redhat' 
+    - '"delete_vm" not in ansible_run_tags'
+
+- include_tasks: prepare_vm_debian.yml
+  when: 
+    - vm_os_family == 'debian'
+    - '"delete_vm" not in ansible_run_tags'
+
+- include_tasks: launch_vm.yml
+  when: 
+    - '"delete_vm" not in ansible_run_tags'
+
+- include_tasks: vm_post_launch_config.yml
+  when: 
+    - vm_enable_extra_disk|bool == true
+    - '"delete_vm" not in ansible_run_tags'

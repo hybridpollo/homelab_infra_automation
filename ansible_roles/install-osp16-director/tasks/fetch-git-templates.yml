@@ -1,0 +1,70 @@
+---
+- name: 'Create templates and image directories in {{ undercloud_home_path }}'
+  file:
+    path: '{{ undercloud_home_path }}/{{ item }}'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_group }}'
+    mode: 0755
+    state: directory
+  loop: '{{ undercloud_dirs }}'
+  tags: 
+    - fetch_git_templates
+
+- name: 'Ensure the {{ undercloud_home_path }}/.ssh directory exists'
+  file:
+    path: '{{ undercloud_home_path }}/.ssh'
+    state: directory
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_user }}'
+    mode: 0744
+  tags: 
+    - fetch_git_templates
+
+- name: 'Copy github ssh keys to {{ undercloud_home_path }}/.ssh'
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: '{{ undercloud_home_path }}/.ssh'
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_user }}'
+    mode: 0600
+  when: enable_git_clone == true
+  loop: 
+    - '{{ github_ssh_priv_key }}'
+    - '{{ github_ssh_pub_key }}'
+  tags:
+    - fetch_git_templates
+
+- name: 'Add github.com to known hosts file'
+  ansible.builtin.known_hosts:
+    name: github.com
+    path: '{{ undercloud_home_path }}/.ssh/known_hosts'
+    key: '{{ lookup("pipe", "ssh-keyscan github.com") }}'
+    hash_host: true
+  when: enable_git_clone == true
+  tags:
+    - fetch_git_templates
+ 
+- name: 'Create the git temporary directory with proper permissions'
+  ansible.builtin.file:
+    path: '{{ undercloud_home_path }}/.ansible/tmp'
+    mode: 0755
+    owner: '{{ undercloud_user }}'
+    group: '{{ undercloud_user }}'
+    state: directory
+  when: enable_git_clone == true
+  tags:
+    - fetch_git_templates
+
+- name: 'Clone RHOSP 16 git templates to {{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}'
+  ansible.builtin.git:
+    repo: '{{ osp_templates_repo }}'
+    version: '{{ osp_templates_branch }}'
+    dest: '{{ undercloud_home_path }}/{{ osp_templates_download_directory_name }}'
+    clone: true
+    accept_hostkey: true
+    force: true
+  become: yes
+  become_user: stack
+  when: enable_git_clone == true
+  tags:
+    - fetch_git_templates

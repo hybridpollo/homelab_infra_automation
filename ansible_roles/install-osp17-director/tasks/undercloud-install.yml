@@ -1,0 +1,33 @@
+---
+# Deploy the undercloud
+# 
+# TODO: register results from undercloud preparation tasks
+# were changed and re-install undercloud
+#
+- name: Ensure the dnf cache is clean before installing the undercloud
+  ansible.builtin.shell: |
+    dnf clean all  
+    dnf makecache
+  args:
+    chdir: '{{ undercloud_home_path }}' 
+  when:
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - undercloud_install
+
+- name: Perform the undercloud installation
+  ansible.builtin.shell: |
+    cd '{{ undercloud_home_path }}'
+    openstack undercloud install
+  args:
+    chdir: '{{ undercloud_home_path }}' 
+  become: yes
+  become_user: '{{ undercloud_user }}'
+  become_method: su 
+  become_flags: '--login'
+  when:
+    - ansible_os_family == 'RedHat'
+    - uc_conf_gen is changed
+  tags: 
+    - undercloud_install
+

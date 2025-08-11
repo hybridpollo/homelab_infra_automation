@@ -1,0 +1,55 @@
+---
+domain: voltron.xyz
+sudo_group: sudo
+time_servers:
+  - clock.nyc.he.net
+  - clock.fmt.he.net
+time_zone: America/Chicago
+dns_servers:
+  - 172.25.49.253
+  - 172.31.103.254
+users_to_create:
+  - name: berto
+    uid: 1001 
+groups_to_create:
+  - name: sudo
+    gid: 27
+  - name: berto
+    gid: 1001
+debian_pkgs_to_install:
+  - openssh-client
+  - openssh-server
+  - chrony
+  - curl
+  - wget
+  - ldnsutils
+  - tcpdump
+  - iproute2
+  - ufw
+  - iftop
+  - sysstat
+  - dhcpcd5
+  - ethtool
+  - nfs-common
+debian_pkgs_to_remove:
+  - triggerhappy
+  - ntp
+  - samba-common
+  - cifs-utils
+  - pi-bluetooth
+  - firewalld
+  - nsd
+debian_svcs_to_disable:
+  - wpa_supplicant
+  - bluetooth
+  - hciuart
+  - rsync
+debian_svcs_to_enable:
+  - chrony
+  - ssh
+  - ufw
+  - dhcpcd
+ufw_allowed_ports:
+  - port_number: 22
+    protocol: tcp
+    source_addr: any

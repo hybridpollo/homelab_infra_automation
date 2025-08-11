@@ -1,0 +1,12 @@
+#{{ ansible_managed }} 
+#
+/var/log/unbound.log {
+    rotate 7
+    daily
+    missingok
+    notifempty
+    copytruncate
+    postrotate
+        unbound-control log_reopen
+    endscript
+}

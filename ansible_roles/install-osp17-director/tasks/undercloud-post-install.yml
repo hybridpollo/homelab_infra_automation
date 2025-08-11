@@ -1,0 +1,20 @@
+---
+- name: Extracting overcloud deployment images into the {{ undercloud_home_path }}/overcloud_images directory
+  unarchive: 
+    remote_src: yes
+    src: '{{ item }}'
+    dest: '{{ undercloud_home_path }}/rhosp_overcloud_deployment_images'
+  loop:
+    - /usr/share/rhosp-director-images/overcloud-hardened-uefi-full-latest.tar
+    - /usr/share/rhosp-director-images/ironic-python-agent-latest.tar
+  tags:
+    - undercloud_post_install
+
+- name: Uploading deployment images to the undercloud
+  shell: |
+    source '{{ undercloud_home_path }}'/stackrc;
+    openstack overcloud image upload --image-path '{{ undercloud_home_path }}'/rhosp_overcloud_deployment_images > /dev/null
+  args:
+    executable: /bin/bash
+  tags:
+    - undercloud_post_install

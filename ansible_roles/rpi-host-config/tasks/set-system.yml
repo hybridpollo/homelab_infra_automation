@@ -1,0 +1,69 @@
+---
+- name: Set the system hostname
+  ansible.builtin.hostname:
+    name: '{{ base_hostname }}.{{domain}}'
+  when: ansible_os_family == 'Debian'
+
+- name: 'Set the system time zone'
+  community.general.timezone:
+    name: '{{ time_zone }}'
+  when: ansible_os_family == 'Debian'
+
+- name: Set the root password for the system
+  ansible.builtin.user:
+    name: root
+    password: '{{ root_pass | password_hash("sha512") }}'
+    update_password: always
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Create the os groups defined in the vars file
+  ansible.builtin.group:
+     name: '{{ item.name }}'
+     gid: '{{ item.gid }}'
+     state: present
+  loop: '{{ groups_to_create }}'
+  when: ansible_os_family == 'Debian'
+
+- name: Create the os local users define in the vars file
+  ansible.builtin.user: 
+    name: '{{ item.name }}'
+    uid: '{{ item.uid }}'
+    groups: '{{ sudo_group }}'
+    append: yes
+    shell: /bin/bash
+    password: '{{ user_pass | password_hash("sha512") }}'
+    update_password: always
+    state: present 
+  loop: '{{ users_to_create }}'
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure /etc/sudoers.d directory exists
+  ansible.builtin.file: 
+     path: /etc/sudoers.d
+     state: directory
+     owner: root
+     group: root
+     mode: 0750
+  when: ansible_os_family == 'Debian'
+
+- name: Render a sudoers file from template
+  ansible.builtin.template: 
+     src: templates/extra-sudo-users.j2
+     dest: /etc/sudoers.d/extra-sudo-users
+     owner: root
+     group: root
+     mode: 0440
+  when: ansible_os_family == 'Debian'
+
+- name: Configure static ipv4 addressing via dhcpcd from template
+  ansible.builtin.template:
+    src: templates/dhcpcd.conf.j2
+    dest: /etc/dhcpcd.conf
+    owner: root
+    group: netdev
+    mode: 0664
+  when: ansible_os_family == 'Debian'
+  notify: 
+     - restart_dhcpcd
+

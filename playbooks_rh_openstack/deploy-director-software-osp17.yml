@@ -1,0 +1,54 @@
+---
+- name: Configuring and Deploying a Red Hat OpenStack Platform 17 Undercloud
+  hosts: director_server
+  roles:
+    - host-setup-common
+    - install-osp17-director
+  vars:
+    # role => host-setup-common vars
+    domain: lab.acanorex.io 
+    base_hostname: osp-dir
+    sudo_group: wheel
+    timezone: America/Chicago
+    local_user_list:
+      - user_name: stack
+        uid: 1001
+    rhsm_enable_registration: true
+    rhsm_hostname: subscription.rhsm.redhat.com
+    rhsm_port: 443
+    rhsm_url_prefix: "/subscription"
+    rhsm_sys_release_version: 9.2
+    rhsm_repositories_enabled:
+      - rhel-9-for-x86_64-appstream-eus-rpms
+      - rhel-9-for-x86_64-baseos-eus-rpms
+      - rhel-9-for-x86_64-highavailability-eus-rpms
+      - openstack-17.1-for-rhel-9-x86_64-rpms
+      - fast-datapath-for-rhel-9-x86_64-rpms
+    rhel_pkgs_to_remove: []
+    rhel_pkgs_to_install:
+      - git
+      - bind-utils
+      - vim-enhanced
+      - tmux
+      - ipmitool
+    reboot_after_updates: true 
+    enabled_system_services:
+      - chronyd
+      - sshd
+    disabled_system_services: []
+
+    # role => install-osp17-director vars
+    # the full list of vars are located in 
+    # the install-osp17-director/defaults/main.yml 
+    overcloud_domain: lab.acanorex.io
+    enable_git_clone: true
+    osp_templates_repo: git@github.com:hybridpollo/osp_templates.git
+    osp_templates_branch: osp17_home_lab
+    osp_templates_download_directory_name: rhosp_deployment
+    github_ssh_priv_key: /home/arlaporte/.ssh/id_rsa
+    github_ssh_pub_key: /home/arlaporte/.ssh/id_rsa.pub
+    
+  vars_files:
+    - vars/undercloud-deploy-vars-osp17.yml
+    - vars/vaulted/undercloud-deploy-vars-osp17.yml
+

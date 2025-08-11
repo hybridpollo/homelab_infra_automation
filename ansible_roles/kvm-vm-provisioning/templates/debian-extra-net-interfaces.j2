@@ -1,0 +1,14 @@
+# Additional network interface
+# these do not get a gateway
+
+[Match]
+Name={{ item.vm_if_dev }}
+
+[Network]
+DHCP=no
+Address={{ item.vm_if_addr}}/{{ item.vm_if_cidr }}
+LinkLocalAddressing=no
+
+[Link]
+MTUBytes={{ item.vm_if_mtu | default('1500') }}
+

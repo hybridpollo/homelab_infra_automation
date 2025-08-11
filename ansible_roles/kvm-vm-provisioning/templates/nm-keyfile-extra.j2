@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+# static network configuration files for rhel based vms
+# using network manager keyfiles
+#
+{% if vm_configure_extra_if is sameas true %}
+[connection]
+id={{ item.vm_if_dev }}
+interface-name={{ item.vm_if_dev }}
+uuid={{ vm_if_uuid }}
+type=ethernet
+autoconnect=true
+
+[ethernet]
+mtu={{ item.vm_if_mtu }}
+
+[ipv4]
+address1={{ item.vm_if_addr }}/{{ item.vm_if_cidr }}
+method=manual
+
+[ipv6]
+method=ignore
+
+[proxy]
+
+{% endif %}

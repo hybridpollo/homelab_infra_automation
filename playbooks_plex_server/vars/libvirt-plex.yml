@@ -1,0 +1,74 @@
+---
+# variables used for kvm/libvirt vm creation
+
+# General Settings
+vm_base_name: plex
+vm_fqdn_name: plex.acanorex.io
+# these variable has been vaulted
+# vm_root_pw:
+# vm_root_pub_key: 
+#
+vm_os_variant: centos-stream9
+
+# Virtual machine resources
+vm_vcpu_count: 4
+vm_ram_size_mb: 8192
+vm_root_disk_gb: 100
+
+# Linux bridges to attach to
+# br-lab-ext: external network interface
+# br-provisioning: provisioning bridge ( does not get an ip  )
+# br-home_wired:  Home networks
+# br-storage_mgmt:  storage network (10GB + 9k mtu)
+# these are looped using jinja2 
+# templating
+vm_net_bridges:
+  - br-home_wired
+  - br-storage_mgmt
+
+# vm default network interface settings
+# additional ip addresses are configured below
+vm_if_dev: eth0
+vm_if_addr: 192.168.9.10
+vm_if_cidr: 24
+vm_if_gateway: 192.168.9.1
+vm_if_dns1: 172.25.49.253
+vm_if_dns2: 172.31.103.254
+vm_if_mtu: 1500
+
+# extra interfaces to configure 
+# these do not get a gateway
+# eth1 = external api which has a mtu 9000 on the 
+# bridge interface on the hypervisor
+# 
+vm_enable_extra_nics: true
+vm_extra_if_dev:
+  - vm_if_dev: eth1
+    vm_if_addr: 172.25.54.10
+    vm_if_cidr: 24
+    vm_if_mtu: 9000
+
+# vm virtual disks specifics
+vm_base_src_image: CentOS-Stream-GenericCloud-x86_64-9-latest.x86_64.qcow2
+vm_base_src_disk_path: /lv_data/kvm_base_images
+vm_dest_disk_path: /lv_data/kvm_images
+vm_dest_disk_file: '{{ vm_base_name }}_root_disk.qcow2'
+vm_root_disk_partition: /dev/sda1
+
+# vm extra disks setting
+vm_enable_extra_disk: false
+vm_extra_disk_size_gb: 1024
+vm_dest_extra_disk_file: '{{ vm_base_name  }}_extra_disk.qcow2'
+vm_extra_disk_physname: /dev/vdb
+vm_extra_disk_vg_name: vg_extra
+vm_extra_disk_lv_name: lv_extra
+vm_extra_disk_mount_point: /extra
+
+# vm rhel portal subscription manager settings
+# used for the temporary installation of packages
+# during vm build some of these parameters are 
+# vaulted some are plain text
+vm_portal_registration_enable: false
+#vm_portal_user: 
+#vm_portal_pw: 
+#vm_portal_pool: 

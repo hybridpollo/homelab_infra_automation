@@ -1,0 +1,22 @@
+# tasks file for install-osp17-director
+---
+- include_tasks: undercloud-prepare.yml
+  tags:
+    - undercloud_prepare
+
+- include_tasks: fetch-git-templates.yml
+  when: enable_git_clone|bool == True
+  tags:
+    - fetch_git_templates
+
+- include_tasks: undercloud-config.yml
+  tags:
+    - undercloud_config
+
+- include_tasks: undercloud-install.yml
+  tags:
+    - undercloud_install
+
+- include_tasks: undercloud-post-install.yml
+  tags:
+    - undercloud_post_install

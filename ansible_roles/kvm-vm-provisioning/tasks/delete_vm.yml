@@ -1,0 +1,61 @@
+---
+- ansible.builtin.pause:
+    prompt: 'Warning: Deleting virtual machine {{ vm_fqdn_name }} will remove all storage. Proceed with deletion: (yes/no)'
+  register: delete_response
+  delegate_to: localhost
+  tags:
+    - delete_vm
+
+- ansible.builtin.fail:
+    msg: 'User canceled virtual machine deletion operation. Exiting!'
+  when: 
+    - delete_response.user_input == 'no' or delete_response.user_input == 'n'
+  tags:
+    - delete_vm
+
+- name: '[ON VM DELETE] Retrieve state of virtual machine: {{ vm_fqdn_name }} before deletion.'
+  ansible.builtin.shell: |
+    virsh domstate '{{ vm_fqdn_name}}'
+  register: vm_current_state
+  ignore_errors: true
+  args:
+   executable: /bin/bash
+  tags:
+    - delete_vm
+
+- name: '[ON VM DELETE] Stopping virtual machine: {{ vm_fqdn_name }} prior to deletion.'
+  ansible.builtin.shell: |
+    virsh destroy '{{ vm_fqdn_name}}'
+  args:
+   executable: /bin/bash
+  when: 
+    - 'vm_current_state.stdout == "running"'
+  tags:
+    - delete_vm
+
+- name: '[ON VM DELETE] Retrieve state of virtual machine: {{ vm_fqdn_name }} after stopping.'
+  ansible.builtin.shell: |
+    virsh domstate '{{ vm_fqdn_name }}'
+  register: vm_current_state
+  ignore_errors: true
+  args:
+   executable: /bin/bash
+  tags:
+    - delete_vm
+
+- name: '[ON VM DELETE] Deleting virtual machine: {{ vm_fqdn_name }}'
+  ansible.builtin.shell: |
+    virsh undefine --remove-all-storage '{{ vm_fqdn_name }}'
+  args:
+   executable: /bin/bash
+  when: 
+    - 'vm_current_state.stdout == "shut off"'
+  tags:
+    - delete_vm
+
+- name: '[ON VM DELETE] Delete virtual machine disk from storage as fallback if domain not running'
+  ansible.builtin.file:
+    path: '{{ vm_dest_disk_path }}/{{ vm_dest_disk_file }}'
+    state: absent
+  tags:
+    - delete_vm

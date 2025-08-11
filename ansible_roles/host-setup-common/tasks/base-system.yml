@@ -1,0 +1,78 @@
+---
+- name: Set the system hostname
+  ansible.builtin.hostname:
+    name: '{{ base_hostname | default("localhost") }}.{{ domain | default("localdomain") }}'
+  tags: 
+    - base_system
+
+- name: Set the system time zone
+  community.general.timezone:
+    name: '{{ time_zone | default("UTC") }}'
+  tags: 
+    - base_system
+
+- name: Set the root password for the system
+  ansible.builtin.user:
+    name: root
+    password: '{{ root_pass | password_hash("sha512") }}'
+    update_password: always
+    state: present
+  tags: 
+    - base_system
+
+- name: Ensure the configured sudo group {{ sudo_group }} exists
+  ansible.builtin.group:
+    name: '{{ sudo_group }}'
+    state: present
+  when: 
+    - local_user_list is defined 
+    - local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system
+
+- name: Create the local users for the system
+  ansible.builtin.user: 
+    name: '{{ item.user_name }}'
+    uid: '{{ item.uid }}'
+    groups: '{{ sudo_group }}'
+    append: yes
+    shell: /bin/bash
+    password: '{{ user_pass | password_hash("sha512") }}'
+    update_password: always
+    state: present 
+  loop: '{{ local_user_list }}'
+  when: 
+    - local_user_list is defined 
+    - local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system
+
+- name: Ensure /etc/sudoers.d directory exists 
+  ansible.builtin.file: 
+     path: /etc/sudoers.d
+     state: directory
+     owner: root
+     group: root
+     mode: 0750
+  when: 
+    - local_user_list is defined 
+    - local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system
+
+- name: Create sudoers file from template
+  ansible.builtin.template: 
+     src: templates/extra-sudo-users.j2
+     dest: /etc/sudoers.d/extra-sudo-users
+     owner: root
+     group: root
+     mode: 0440
+  when: 
+    - local_user_list is defined 
+    - local_user_list | length > 0
+    - ansible_os_family == 'RedHat'
+  tags: 
+    - base_system

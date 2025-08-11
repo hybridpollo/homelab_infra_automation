@@ -1,0 +1,18 @@
+---
+- name: Configuring and Deploying a Red Hat OpenStack Platform 17 Undercloud
+  hosts: director_server
+  vars:
+    enable_git_clone: true
+    osp_templates_repo: git@github.com:hybridpollo/osp_templates.git
+    osp_templates_branch: osp17_home_lab
+    osp_templates_download_directory_name: rhosp_deployment
+    github_ssh_priv_key: /home/arlaporte/.ssh/id_rsa
+    github_ssh_pub_key: /home/arlaporte/.ssh/id_rsa.pub
+  vars_files:
+    - vars/undercloud-deploy-vars-osp17.yml
+    - vars/vaulted/undercloud-deploy-vars-osp17.yml
+  tasks:
+    - name: Import install-osp17-director role
+      include_role:
+       name: install-osp17-director
+
