@@ -44,7 +44,7 @@ tls_everywhere_rpms:
 # /usr/share/instack-undercloud/undercloud.conf.sample 
 # for all available parameters
 # overcloud domain 
-overcloud_domain: lab.acanorex.io
+overcloud_domain: acanorex.io
 undercloud_local_interface: eth1
 undercloud_local_mtu: 1500
 undercloud_enable_uefi: false
@@ -61,15 +61,15 @@ undercloud_enable_custom_environment_file: false
 undercloud_custom_environment_file: '{{ undercloud_home_path }}/undercloud_custom_env.yml'
 undercloud_inspection_interface: br-ctlplane
 undercloud_local_subnet: ctlplane-subnet
-undercloud_local_ip: 172.25.47.2/24
-undercloud_public_vip: 172.25.47.3
-undercloud_admin_vip: 172.25.47.4
-undercloud_provisioning_cidr: 172.25.47.0/24
-undercloud_dhcp_provisioning_start: 172.25.47.10
-undercloud_dhcp_provisioning_end: 172.25.47.199
-undercloud_dhcp_inspection_start: 172.25.47.200
-undercloud_dhcp_inspection_end: 172.25.47.254
-undercloud_dhcp_gateway: 172.25.47.1
+undercloud_local_ip: 172.25.50.2/24
+undercloud_public_vip: 172.25.50.3
+undercloud_admin_vip: 172.25.50.4
+undercloud_provisioning_cidr: 172.25.50.0/24
+undercloud_dhcp_provisioning_start: 172.25.50.10
+undercloud_dhcp_provisioning_end: 172.25.50.199
+undercloud_dhcp_inspection_start: 172.25.50.200
+undercloud_dhcp_inspection_end: 172.25.50.254
+undercloud_dhcp_gateway: 172.25.50.1
 undercloud_enable_masquerade: false
 undercloud_name_servers:
   - 172.25.49.253
@@ -87,8 +87,8 @@ undercloud_enabled_hardware_types:
 
 # container registry parameters
 undercloud_container_images_namespace: 'registry.redhat.io/rhosp-rhel9'
-undercloud_container_registry_address: 172.25.47.2:8787
-undercloud_container_images_tag: 17.1.4
+undercloud_container_registry_address: 172.25.50.2:8787
+undercloud_container_images_tag: 17.1.9
 undercloud_remote_registry_login: true
 # container registry username and password
 # are vaulted

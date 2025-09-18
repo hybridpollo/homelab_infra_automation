@@ -6,7 +6,7 @@
     - install-osp17-director
   vars:
     # role => host-setup-common vars
-    domain: lab.acanorex.io 
+    domain: acanorex.io 
     base_hostname: osp-dir
     sudo_group: wheel
     timezone: America/Chicago
@@ -40,7 +40,7 @@
     # role => install-osp17-director vars
     # the full list of vars are located in 
     # the install-osp17-director/defaults/main.yml 
-    overcloud_domain: lab.acanorex.io
+    overcloud_domain: acanorex.io
     enable_git_clone: true
     osp_templates_repo: git@github.com:hybridpollo/osp_templates.git
     osp_templates_branch: osp17_home_lab

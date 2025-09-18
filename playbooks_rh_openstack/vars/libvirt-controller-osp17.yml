@@ -1,13 +1,8 @@
 ---
-# defaults file 
-# Go over variables below and pass them in extra vars, playbook vars,
-# vars_files, inventory file or whatever which overwrite these values!
-
+# variables used for kvm/libvirt vm creation
 # General Settings
-# 
-vm_boot_on_create: false
-vm_base_name: osp-ctrl01
-vm_fqdn_name: osp-ctrl01.lab.acanorex.io
+vm_base_name: ""
+vm_fqdn_name: "" 
 
 # these variable has been vaulted
 # vm_root_pw:
@@ -15,18 +10,18 @@ vm_fqdn_name: osp-ctrl01.lab.acanorex.io
 #
 vm_os_variant: rhel9.2
 vm_os_family: redhat
+vm_boot_on_create: false
 
 # Virtual machine resources
 vm_vcpu_count: 8
-vm_ram_size_mb: 16384
-vm_root_disk_gb: 250
+vm_ram_size_mb: 16834
+vm_root_disk_gb: 200
 
-# Linux bridges to attach io
+# 
+# Linux bridges to attach to
+# br-lab-ext: external network interface
 # br-provisioning: provisioning bridge ( does not get an ip  )
-# br-mgmt: external management bridge. This is the trunk interface for 
-#          external / routable networks
-# br-lab-int: internal bridge. This is the trunk interface for 
-#          non-routable or internal tagged networks on the controller
+# br-home_wired:  Home networks
 # br-storage_mgmt:  storage network (10GB + 9k mtu)
 # these are looped using jinja2 
 # templating
@@ -39,25 +34,25 @@ vm_net_bridges:
 # vm default network interface settings
 # additional ip addresses are configured below
 vm_if_configure_ip: false
-vm_if_dev: eth1
-vm_if_addr: 172.25.48.200
-vm_if_cidr: 23
-vm_if_gateway: 172.25.48.1
-vm_if_dns1: 172.25.49.253
-vm_if_dns2: 172.31.103.254
+vm_if_dev: eth0
+vm_if_addr: 1.1.1.1
+vm_if_cidr: 24
+vm_if_gateway: 1.1.1.1
+vm_if_dns1: 1.1.1.1
+vm_if_dns2: 1.1.1.1
+vm_if_mtu: 1500
 
 # extra interfaces to configure 
 # these do not get a gateway
-vm_enable_extra_nics: false
+# eth1 = external api which has a mtu 9000 on the 
+# bridge interface on the hypervisor
+# 
+vm_configure_extra_if: false
 vm_extra_if_dev:
-  - ifname: eth1
-    ip: 172.30.1.187
-    netmask: 255.255.255.192
-    ifmtu: 9000
-  - ifname: eth2
-    ip: 172.30.9.251
-    netmask: 255.255.254.0 
-    ifmtu: 1500
+  - vm_if_dev: eth1
+    vm_if_addr: 1.1.1.1
+    vm_if_cidr: 24
+    vm_if_mtu: 9000
 
 # vm virtual disks 
 vm_base_src_image: rhel-9.2-x86_64-kvm.qcow2
@@ -71,11 +66,11 @@ vm_root_disk_partition: /dev/sda4
 # vm extra disks setting
 vm_enable_extra_disk: false
 vm_extra_disk_size_gb: 1024
-vm_dest_extra_disk_file: '{{ vm_base_name  }}_pulp_disk.qcow2'
+vm_dest_extra_disk_file: '{{ vm_base_name  }}_extra_disk.qcow2'
 vm_extra_disk_physname: /dev/vdb
-vm_extra_disk_vg_name: vg_pulp
-vm_extra_disk_lv_name: lv_pulp
-vm_extra_disk_mount_point: /var/lib/pulp
+vm_extra_disk_vg_name: vg_extra
+vm_extra_disk_lv_name: lv_extra
+vm_extra_disk_mount_point: /extra
 
 # vm rhel portal subscription manager settings
 # used for the temporary installation of packages

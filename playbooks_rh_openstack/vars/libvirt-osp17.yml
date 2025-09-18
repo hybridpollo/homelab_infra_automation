@@ -2,7 +2,7 @@
 # variables used for kvm/libvirt vm creation
 # General Settings
 vm_base_name: osp-dir
-vm_fqdn_name: osp-dir.lab.acanorex.io
+vm_fqdn_name: osp-dir.acanorex.io
 
 # these variable has been vaulted
 # vm_root_pw:
@@ -24,15 +24,16 @@ vm_root_disk_gb: 250
 # these are looped using jinja2 
 # templating
 vm_net_bridges:
-  - br-lab_ext
+  - br-lab_net
   - br-provisioning
 
 # vm default network interface settings
 # additional ip addresses are configured below
+vm_if_configure_ip: true
 vm_if_dev: eth0
-vm_if_addr: 172.25.48.10
-vm_if_cidr: 24
-vm_if_gateway: 172.25.48.1
+vm_if_addr: 172.31.100.2
+vm_if_cidr: 22
+vm_if_gateway: 172.31.100.1
 vm_if_dns1: 172.25.49.253
 vm_if_dns2: 172.31.103.254
 vm_if_mtu: 1500

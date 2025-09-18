@@ -2,7 +2,7 @@
 # variables used for kvm/libvirt vm creation
 # General Settings
 vm_base_name: osp-dir
-vm_fqdn_name: osp-dir.lab.acanorex.io
+vm_fqdn_name: osp-dir.acanorex.io
 
 # these variable has been vaulted
 # vm_root_pw:

@@ -83,8 +83,8 @@ plex_hosts:
 #
 director_server:
   hosts:
-     osp-dir.lab.acanorex.io:
-       ansible_host: 172.25.48.10
+     osp-dir.acanorex.io:
+       ansible_host: 172.31.100.2
        ansible_user: root
 
 # Bifrost server

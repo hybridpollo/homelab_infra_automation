@@ -1,0 +1,42 @@
+---
+# This playbook runs on the kvm host to build the virtual machine
+# that will be used as an openstack controllers
+# note: The virtual machine while it does get an OS image intalled
+#       as part of this process, it is for the most part irrelevant
+#       as the OS will be wiped and reinstalled during the openstack
+#       installation through director/tripleo
+- hosts: kvm01.acanorex.io 
+  become: True
+  vars_files:
+    - vars/libvirt-controller-osp17.yml
+    - vars/vaulted/libvirt-osp17.yml
+  tasks:
+    - name: Build virtual openstack controller 01
+      import_role:
+        name: kvm-vm-provisioning 
+      tags:
+        - create_vm
+        - delete_vm
+      vars:
+        vm_base_name: osp-ctrl01
+        vm_fqdn_name: osp-ctrl01.acanorex.io
+
+    - name: Build virtual openstack controller 02
+      import_role:
+        name: kvm-vm-provisioning 
+      tags:
+        - create_vm
+        - delete_vm
+      vars:
+        vm_base_name: osp-ctrl02
+        vm_fqdn_name: osp-ctrl02.acanorex.io
+
+    - name: Build virtual openstack controller 03
+      import_role:
+        name:  kvm-vm-provisioning 
+      tags:
+        - create_vm
+        - delete_vm
+      vars:
+        vm_base_name: osp-ctrl03
+        vm_fqdn_name: osp-ctrl03.acanorex.io
