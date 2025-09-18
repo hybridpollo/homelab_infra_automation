@@ -13,16 +13,19 @@ __playbooks_vm_provisioning__ -> Playbooks used to deploy kvm/libvirt virtual ma
 __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructure for a Red Hat OpenStack Platform 16 or 17 home lab deployment. 
 
 ```
+.
+├── LICENSE
+├── README.md
 ├── ansible.cfg
 ├── ansible_inventory
 │   └── hosts
 ├── ansible_roles
+│   ├── centos-bifrost
 │   ├── host-setup-common
 │   ├── install-osp16-director
 │   ├── install-osp17-director
 │   ├── kvm-vm-provisioning
 │   ├── lab-dns-infra
-│   ├── rhel-bifrost
 │   ├── rhel-plex-server-config
 │   └── rpi-host-config
 ├── ansible_vault
@@ -46,7 +49,7 @@ __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructu
 ├── playbooks_rh_openstack
 │   ├── deploy-director-software-osp16.yml
 │   ├── deploy-director-software-osp17.yml
-│   ├── deploy-kvm-openstack-controller-vm.yml
+│   ├── deploy-kvm-openstack-controllers.yml
 │   ├── deploy-kvm-osp16-director-vm.yml
 │   ├── deploy-kvm-osp17-director-vm.yml
 │   └── vars
@@ -56,16 +59,12 @@ __playbooks_rh_openstack__ -> Playbooks used to initialize the base infrastructu
 │   ├── deploy-centos-8-streams-vm.yml
 │   ├── deploy-centos-9-streams-vm.yml
 │   ├── deploy-debian-12-vm.yml
-│   ├── deploy-ocp-bastion.yml
-│   ├── deploy-ocp-boostrap-node.yml
-│   ├── deploy-ocp-lb.yml
 │   ├── deploy-rhel-7-7.vm.yml
 │   ├── deploy-rhel-8-vm.yml
-│   ├── inventory
+│   ├── deploy-rhel-9-vm.yml
 │   └── vars
 └── repo_assets
     └── diagrams
-
 ```
 
 ## Lab Diagram and References
@@ -86,3 +85,5 @@ You are welcome to copy, fork, ridicule any of the contents of this repository b
 ### Use of secrets, vaults, and passwords
 This repository avoids the use of plain text passwords, secrets, and or any other information that could in some eyes considered details which should not be publicly visible.  To that I say, learn how to secure your shit! and most importantly, do not expose anything in Git{hub,lab} that you do not want to be seen. 
 
+
+25 directories, 26 files
