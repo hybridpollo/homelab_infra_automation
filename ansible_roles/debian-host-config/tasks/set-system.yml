@@ -56,14 +56,3 @@
      mode: 0440
   when: ansible_os_family == 'Debian'
 
-- name: Configure static ipv4 addressing via dhcpcd from template
-  ansible.builtin.template:
-    src: templates/dhcpcd.conf.j2
-    dest: /etc/dhcpcd.conf
-    owner: root
-    group: netdev
-    mode: 0664
-  when: ansible_os_family == 'Debian'
-  notify: 
-     - restart_dhcpcd
-

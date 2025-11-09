@@ -52,6 +52,8 @@
     from_ip: '{{ item.source_addr }}'
     state: enabled
   loop: '{{ ufw_allowed_ports }}'
-  when: ansible_os_family == 'Debian'
+  when: 
+    - ansible_os_family == 'Debian'
+    - configure_ufw|bool == True
   tags:
     - configure_ufw_base
