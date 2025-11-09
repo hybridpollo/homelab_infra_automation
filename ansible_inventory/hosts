@@ -18,6 +18,22 @@ debian_hosts:
       ansible_host: 172.16.254.9
       base_hostname: kvm-util
       configure_dhcpcd: False
+      configure_ufw: False
+      debian_pkgs_to_install:
+        - openssh-client
+        - openssh-server
+        - chrony
+        - curl
+        - wget
+        - ldnsutils
+        - tcpdump
+        - iproute2
+        - iftop
+        - sysstat
+        - ethtool
+        - nfs-common
+        - vim
+
       debian_svcs_to_disable:
         - ufw
         - wpa_supplicant

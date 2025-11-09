@@ -30,6 +30,7 @@ debian_pkgs_to_install:
   - sysstat
   - ethtool
   - nfs-common
+  - vim
 debian_pkgs_to_remove:
   - dhcpcd5
   - triggerhappy
