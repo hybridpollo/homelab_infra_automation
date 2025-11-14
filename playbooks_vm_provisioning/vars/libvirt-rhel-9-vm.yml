@@ -53,13 +53,13 @@ vm_extra_if_dev:
 vm_base_src_image: rhel-9.5-x86_64-kvm.qcow2
 vm_base_src_disk_path: /lv_data/kvm_base_images
 vm_dest_disk_path: /lv_data/kvm_images
-vm_dest_disk_file: '{{ vm_base_name }}_root_disk.qcow2'
+vm_dest_disk_file: '{{ vm_fqdn_name }}_root_disk.qcow2'
 vm_root_disk_partition: /dev/sda4
 
 # vm extra disks setting
 vm_enable_extra_disk: false
 vm_extra_disk_size_gb: 1024
-vm_dest_extra_disk_file: '{{ vm_base_name  }}_extra_disk.qcow2'
+vm_dest_extra_disk_file: '{{ vm_fqdn_name  }}_extra_disk.qcow2'
 vm_extra_disk_physname: /dev/vdb
 vm_extra_disk_vg_name: vg_extra
 vm_extra_disk_lv_name: lv_extra

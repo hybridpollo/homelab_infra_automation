@@ -11,7 +11,7 @@
     - "'dns_infra_hosts' in group_names"
   notify: restart_unbound
   tags: 
-    - install_unbound
+    - config_unbound
 
 - name: Ensure unbound logfile exists
   copy:
@@ -25,7 +25,7 @@
     - ansible_os_family == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
-    - install_unbound
+    - config_unbound
 
 - name: Deploy the logrotate configuration for unbound to host
   template:
@@ -38,7 +38,7 @@
     - ansible_os_family == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
-    - install_unbound
+    - config_unbound
 
 - name: Check syntax on unbound.conf before starting service
   command: unbound-checkconf /etc/unbound/unbound.conf
@@ -47,7 +47,7 @@
     - ansible_os_family == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
-    - install_unbound
+    - config_unbound
 
 - name: Fail if there are issues with the unbound.conf syntax
   fail:
@@ -57,7 +57,7 @@
     - ansible_os_family == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
-    - install_unbound
+    - config_unbound
 
 - name: Ensure unbound service started and enabled
   service:
@@ -68,7 +68,7 @@
     - ansible_os_family == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
-    - install_unbound
+    - config_unbound
 
 - name: UFW allow dns services ports
   ufw:
@@ -83,4 +83,4 @@
     - ansible_os_family == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags:
-    - install_unbound
+    - config_unbound

@@ -6,7 +6,7 @@ time_servers:
   - clock.fmt.he.net
 time_zone: America/Chicago
 dns_servers:
-  - 172.25.49.253
+  - 172.31.103.253
   - 172.31.103.254
 users_to_create:
   - name: berto

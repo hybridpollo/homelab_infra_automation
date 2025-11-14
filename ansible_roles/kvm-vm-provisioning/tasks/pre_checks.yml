@@ -1,7 +1,7 @@
 ---
 - name: Verify if virtual machine exists
   ansible.builtin.shell: |
-    virsh list --all --name | grep '{ vm_base_name }}'
+    virsh list --all --name | grep '{{ vm_fqdn_name }}'
   args:
    executable: /bin/bash
   register: is_vm_running
@@ -11,8 +11,8 @@
 
 - name: Fail when virtual machine is running or it exists on vm creation
   ansible.builtin.fail:
-    msg: 'ERROR: Machine {{ vm_base_name }} is running. Halting'
+    msg: 'ERROR: Machine {{ vm_fqdn_name }} is running. Halting'
   when: 
-    - 'is_vm_running.stdout_lines is search(vm_base_name) and "create_vm" in ansible_run_tags'
+    - 'is_vm_running.stdout_lines is search(vm_fqdn_name) and "create_vm" in ansible_run_tags'
   tags:
     - create_vm

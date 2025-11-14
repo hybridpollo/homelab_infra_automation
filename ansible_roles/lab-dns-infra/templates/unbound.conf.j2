@@ -13,7 +13,7 @@ server:
     log-queries: yes
     logfile: /var/log/unbound.log
 
-    # Respond to DNS requests on all interfaces
+    # Respond to DNS requests on default ipv4 interface
     interface: {{ ansible_default_ipv4.address }}
 
     # DNS request port, IP and protocol

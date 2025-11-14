@@ -19,5 +19,6 @@
   vars_files:
     - vars/vaulted/vaulted-vars.yml
   tags:
-    - setup_unbound
-    - rpi_host_config
+    - bootstrap_dns
+    - config_unbound
+

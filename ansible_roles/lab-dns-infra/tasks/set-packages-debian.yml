@@ -4,6 +4,7 @@
     update_cache: yes
   when: ansible_os_family == 'Debian'
   tags:
+    - rpi_host_config
     - update_apt_cache
 
 - name: Install packages to support Unbound dns resolver
@@ -12,4 +13,5 @@
     state: latest
   when: ansible_os_family == 'Debian'
   tags:
+    - rpi_host_config
     - install_pkgs

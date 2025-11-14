@@ -1,4 +1,6 @@
 ---
   - include_tasks: set-packages-debian.yml
+    when: inventory_hostname in groups['dns_infra_hosts'] or '"boostrap_dns" in ansible_run_tags'                   
   - include_tasks: configure-unbound-server.yml
+    when: inventory_hostname in groups['dns_infra_hosts'] or '"config_unbound" in ansible_run_tags'                   
 

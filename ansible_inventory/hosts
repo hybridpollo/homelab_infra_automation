@@ -9,10 +9,6 @@
 #
 rpi_hosts:
   hosts:
-    jump.acanorex.io:
-      ansible_user: berto
-      ansible_host: 172.25.49.252
-      base_hostname: jump
     cachens.acanorex.io:
       ansible_user: berto
       ansible_host: 172.25.49.253
@@ -38,12 +34,8 @@ dns_infra_hosts:
 kvm_hosts:
   hosts:
     kvm01.acanorex.io:
-      ansible_user: berto
+      ansible_user: arlaporte
       base_hostname: kvm01
-      reboot_after_updates: false
-    kvm02.acanorex.io:
-      ansible_user: berto
-      base_hostname: kvm02
       reboot_after_updates: false
 
 # Red Hat Identity Manager (IDM) host group

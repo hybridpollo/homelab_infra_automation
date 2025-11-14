@@ -2,7 +2,7 @@
 
 # General Settings
 vm_base_name: c9-bf01
-vm_fqdn_name: c9-bf01.lab.acanorex.io
+vm_fqdn_name: c9-bf01.acanorex.io
 # these variable has been vaulted
 # vm_root_pw:
 # vm_root_pub_key: 
