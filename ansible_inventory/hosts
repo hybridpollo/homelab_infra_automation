@@ -7,13 +7,40 @@
 #   - nsd authoritative dns server for lab networks
 #   - unbound dns caching server for dns caching.
 #
-rpi_hosts:
+debian_hosts:
   hosts:
     cachens.acanorex.io:
       ansible_user: berto
       ansible_host: 172.25.49.253
       base_hostname: cachens
+    kvm-util.acanorex.io:
+      ansible_user: berto
+      ansible_host: 172.16.254.9
+      base_hostname: kvm-util
+      configure_dhcpcd: False
+      configure_ufw: False
+      debian_pkgs_to_install:
+        - openssh-client
+        - openssh-server
+        - chrony
+        - curl
+        - wget
+        - ldnsutils
+        - tcpdump
+        - iproute2
+        - iftop
+        - sysstat
+        - ethtool
+        - nfs-common
+        - vim
 
+      debian_svcs_to_disable:
+        - ufw
+        - wpa_supplicant
+        - bluetooth
+      debian_svcs_to_enable:
+        - chrony
+        - ssh
 dns_infra_hosts:
   hosts:
     cachens.acanorex.io:
