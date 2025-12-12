@@ -1,8 +1,8 @@
 # vars files used for kvm/libvirt vm creation
 
 # General Settings
-vm_base_name: utility
-vm_fqdn_name: utility.acanorex.io
+vm_base_name: acm01
+vm_fqdn_name: acm01.acanorex.io
 # these variable has been vaulted
 # vm_root_pw:
 # vm_root_pub_key: 
@@ -11,9 +11,9 @@ vm_os_variant: rhel9.5
 vm_os_family: redhat
 
 # Virtual machine resources
-vm_vcpu_count: 4
-vm_ram_size_mb: 8192
-vm_root_disk_gb: 200
+vm_vcpu_count: 16
+vm_ram_size_mb: 65536
+vm_root_disk_gb: 500
 
 # Linux bridges to attach to
 # br-lab-ext: external network interface
@@ -24,12 +24,13 @@ vm_root_disk_gb: 200
 # templating
 vm_net_bridges:
   - br-lab_net
+  - br-storage
 
 # vm default network interface settings
 # additional ip addresses are configured below
-vm_if_configure_ip: true
+vm_if_configure_ip: false
 vm_if_dev: enp1s0
-vm_if_addr: 172.31.100.5
+vm_if_addr: 172.31.103.9
 vm_if_netmask: 255.255.252.0
 vm_if_cidr: 23
 vm_if_gateway: 172.31.100.1
@@ -42,7 +43,7 @@ vm_if_mtu: 1500
 # eth1 = external api which has a mtu 9000 on the 
 # bridge interface on the hypervisor
 # 
-vm_enable_extra_nics: false
+vm_configure_extra_if: false
 vm_extra_if_dev:
   - vm_if_dev: eth1
     vm_if_addr: 172.25.54.10

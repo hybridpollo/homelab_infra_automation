@@ -193,9 +193,10 @@
     --selinux-relabel
   args:
     executable: /bin/bash
-  when: 
-    - vm_os_family == 'redhat'
-    - ansible_distribution_major_version|int >= 8
+  when: |
+    (vm_if_configure_ip == True or vm_configure_extra_if == True) and
+    vm_os_family == 'redhat' and
+    ansible_distribution_major_version|int >= 8
   tags:
     - create_vm
 

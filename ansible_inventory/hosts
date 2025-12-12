@@ -11,13 +11,12 @@ debian_hosts:
   hosts:
     cachens.acanorex.io:
       ansible_user: berto
-      ansible_host: 172.25.49.253
+      ansible_host: 172.31.103.253
       base_hostname: cachens
     kvm-util.acanorex.io:
       ansible_user: berto
       ansible_host: 172.16.254.9
       base_hostname: kvm-util
-      configure_dhcpcd: False
       configure_ufw: False
       debian_pkgs_to_install:
         - openssh-client
@@ -33,7 +32,6 @@ debian_hosts:
         - ethtool
         - nfs-common
         - vim
-
       debian_svcs_to_disable:
         - ufw
         - wpa_supplicant
@@ -45,7 +43,7 @@ dns_infra_hosts:
   hosts:
     cachens.acanorex.io:
       ansible_user: berto
-      ansible_host: 172.25.49.253
+      ansible_host: 172.31.103.253
       base_hostname: cachens
 
 # KVM host groups

@@ -69,7 +69,7 @@ vm_extra_if_dev:
 #    nexthop: 172.30.1.190
 
 # vm virtual disks specifics
-vm_image_repo_url: http://kvm01.acanorex.io/pub/os_images
+vm_image_repo_url: http://kvm-util.acanorex.io/pub/os_images
 vm_base_src_disk_path: /tmp/kvm_base_images
 vm_base_src_image: rhel-server-7.9-update-3-x86_64-kvm.qcow2
 vm_dest_disk_path: /lv_data/kvm_images
