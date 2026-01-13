@@ -37,7 +37,6 @@
     owner: root
     group: root
   when: 
-    - vm_if_configure_ip == True
     - vm_os_family == 'redhat'
     - ansible_distribution_major_version|int >= 8
   tags:
