@@ -86,14 +86,6 @@ utility_hosts:
       ansible_user: berto
       base_hostname: utility
 
-# Plex group
-# Purposes:
-#  This is the vm that I use as my plex server
-#  for my home network
-plex_hosts:
-  hosts:
-    plex.acanorex.io:
-      ansible_user: root
 
 # Red Hat OpenStack Platform Director 
 # this is used for red hat openstack platform deployments
