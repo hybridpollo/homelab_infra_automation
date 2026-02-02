@@ -9,7 +9,7 @@
   notify: 
      - restart_chrony 
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags: 
     - base_services
 
@@ -23,7 +23,7 @@
   notify: 
      - restart_sshd
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags: 
     - base_services
 
@@ -34,7 +34,7 @@
     enabled: true 
   loop: '{{ enabled_system_services if enabled_system_services is iterable else [] | list }}'
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
     - enabled_system_services is defined
     - enabled_system_services | length > 0
   tags: 
@@ -47,7 +47,7 @@
     enabled: false
   loop: '{{ disabled_system_services if disabled_system_services is iterable else [] | list }}'
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
     - disabled_system_services is defined
     - disabled_system_services | length > 0
   tags: 

@@ -27,7 +27,7 @@
   when: 
     - local_user_list is defined 
     - local_user_list | length > 0
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags: 
     - base_system
 
@@ -45,7 +45,7 @@
   when: 
     - local_user_list is defined 
     - local_user_list | length > 0
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags: 
     - base_system
 
@@ -59,7 +59,7 @@
   when: 
     - local_user_list is defined 
     - local_user_list | length > 0
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags: 
     - base_system
 
@@ -73,6 +73,6 @@
   when: 
     - local_user_list is defined 
     - local_user_list | length > 0
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags: 
     - base_system

@@ -4,7 +4,7 @@
     name: cloud-init
     state: absent
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags:
     - system_updates
 
@@ -13,7 +13,7 @@
     name: crb
     state: enabled
   when: 
-    - ansible_distribution == 'CentOS'
+    - ansible_facts['distribution'] == 'CentOS'
   tags:
     - system_updates
 
@@ -22,7 +22,7 @@
     name: epel-release
     state: latest
   when: 
-    - ansible_distribution == 'CentOS'
+    - ansible_facts['distribution'] == 'CentOS'
   tags:
     - system_updates
 
@@ -36,7 +36,7 @@
   retries: 10
   delay: 5
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags:
     - system_updates
 
@@ -49,7 +49,8 @@
   when: 
     - is_updated is changed
     - reboot_after_updates|bool == True
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
+  tags:
   tags:
     - system_updates
 
@@ -62,7 +63,7 @@
   when: 
     - is_updated is changed
     - reboot_after_updates|bool == True
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags:
     - system_updates
 
@@ -71,7 +72,7 @@
     name: '{{ rhel_pkgs_to_remove | default(omit) }}'
     state: absent
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
     - rhel_pkgs_to_remove is defined 
     - rhel_pkgs_to_remove | length > 0
   tags:
@@ -82,9 +83,8 @@
     name: '{{ rhel_pkgs_to_install | default(omit) }}'
     state: present
   when: 
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
     - rhel_pkgs_to_install is defined 
     - rhel_pkgs_to_install | length > 0
   tags:
     - system_updates
-

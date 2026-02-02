@@ -8,7 +8,7 @@
   changed_when: false
   when: 
     - rhsm_enable_registration|bool == True
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags:
     - rhsm_register
 
@@ -26,7 +26,7 @@
   when: 
     - '"Unknown" in reg_status.stdout'
     - rhsm_enable_registration|bool == True
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   until: rhsm_reg.failed is false 
   retries: 3
   delay: 5
@@ -38,7 +38,7 @@
     release: '{{ rhsm_sys_release_version | default(9) }}'
   when: 
     - rhsm_enable_registration|bool == True
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   tags:
     - rhsm_register
 
@@ -48,7 +48,7 @@
     state: disabled
   when: 
     - rhsm_enable_registration|bool == True
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   retries: 3
   delay: 5
   tags:
@@ -60,7 +60,7 @@
     state: enabled
   when: 
     - rhsm_enable_registration|bool == True
-    - ansible_os_family == 'RedHat'
+    - ansible_facts['os_family'] == 'RedHat'
   retries: 3
   delay: 5
   tags:
