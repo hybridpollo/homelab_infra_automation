@@ -13,6 +13,31 @@ debian_hosts:
       ansible_user: berto
       ansible_host: 172.31.103.253
       base_hostname: cachens
+    sshgw.acanorex.io:
+      ansible_user: berto
+      ansible_host: 172.31.103.251
+      base_hostname: sshgw
+      debian_pkgs_to_install:
+        - openssh-client
+        - openssh-server
+        - chrony
+        - curl
+        - wget
+        - ldnsutils
+        - tcpdump
+        - iproute2
+        - iftop
+        - sysstat
+        - ethtool
+        - ufw
+        - vim
+      debian_svcs_to_disable:
+        - wpa_supplicant
+        - bluetooth
+      debian_svcs_to_enable:
+        - ufw
+        - chrony
+        - ssh
     kvm-util.acanorex.io:
       ansible_user: berto
       ansible_host: 172.16.254.9
