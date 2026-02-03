@@ -7,7 +7,7 @@
      group: root
      mode: 0640
   when: 
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - "'dns_infra_hosts' in group_names"
   notify: restart_unbound
   tags: 
@@ -22,7 +22,7 @@
     mode: 0640
     force: no
   when: 
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
     - config_unbound
@@ -35,7 +35,7 @@
      group: root
      mode: 0644
   when: 
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
     - config_unbound
@@ -44,7 +44,7 @@
   command: unbound-checkconf /etc/unbound/unbound.conf
   register: unbound_conf_check
   when: 
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
     - config_unbound
@@ -54,7 +54,7 @@
     msg: 'Error: /etc/unbound/unbound.conf syntax is invalid'
   when: 
     - unbound_conf_check.rc != 0
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
     - config_unbound
@@ -65,7 +65,7 @@
      state: started
      enabled: true
   when: 
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags: 
     - config_unbound
@@ -80,7 +80,7 @@
   loop: '{{ ufw_allowed_ports }}'
   notify: restart_ufw
   when: 
-    - ansible_os_family == 'Debian'
+    - ansible_facts['os_family'] == 'Debian'
     - "'dns_infra_hosts' in group_names"
   tags:
     - config_unbound

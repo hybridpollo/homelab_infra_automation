@@ -2,7 +2,7 @@
 - name: Update apt cache on Debian based hosts
   ansible.builtin.apt:
     update_cache: yes
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   tags:
     - update_apt_cache
 
@@ -10,7 +10,7 @@
   ansible.builtin.apt:
     name: '{{ debian_pkgs_to_remove }}'
     state: absent
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   tags:
     - remove_pkgs
 
@@ -19,6 +19,6 @@
     name: '{{ debian_pkgs_to_install }}'
     install_recommends: False
     state: latest
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   tags:
     - install_pkgs
