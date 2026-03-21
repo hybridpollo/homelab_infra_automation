@@ -1,3 +1,6 @@
 #{{ ansible_managed }} 
 #
-%{{sudo_group}}  ALL=(ALL:ALL) NOPASSWD:ALL
+{% for item in local_user_list %}
+%{{ item.sudo_group }}  ALL=(ALL:ALL) NOPASSWD:ALL
+{% endfor %}
+
