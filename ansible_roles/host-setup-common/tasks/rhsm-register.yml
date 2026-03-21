@@ -24,7 +24,7 @@
     release: '{{ rhsm_sys_release_version | default(9) }}'
   register: rhsm_reg
   when: 
-    - '"Unknown" in reg_status.stdout'
+    - '"Not registered" in reg_status.stdout'
     - rhsm_enable_registration|bool == True
     - ansible_facts['os_family'] == 'RedHat'
   until: rhsm_reg.failed is false 
@@ -37,6 +37,8 @@
   community.general.rhsm_release:
     release: '{{ rhsm_sys_release_version | default(9) }}'
   when: 
+    - '"Not registered" in reg_status.stdout'
+    - rhsm_enable_registration|bool == True
     - rhsm_enable_registration|bool == True
     - ansible_facts['os_family'] == 'RedHat'
   tags:
@@ -47,6 +49,7 @@
     name: '*'
     state: disabled
   when: 
+    - '"Not registered" in reg_status.stdout'
     - rhsm_enable_registration|bool == True
     - ansible_facts['os_family'] == 'RedHat'
   retries: 3
@@ -59,6 +62,7 @@
     name: '{{ rhsm_repositories_enabled }}'
     state: enabled
   when: 
+    - '"Not registered" in reg_status.stdout'
     - rhsm_enable_registration|bool == True
     - ansible_facts['os_family'] == 'RedHat'
   retries: 3

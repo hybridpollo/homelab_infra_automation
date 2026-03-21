@@ -7,7 +7,7 @@
 - include_tasks: rhsm-register.yml 
   when: 
     - rhsm_enable_registration|bool == True
-    - ansible_distribution == 'RedHat'
+    - ansible_facts['distribution'] == 'RedHat'
   tags:
     - rhsm_register
 

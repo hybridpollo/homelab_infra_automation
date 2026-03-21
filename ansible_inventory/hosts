@@ -105,11 +105,17 @@ idm_hosts:
 # Purposes:
 #  This is my work-horse and its where all of my utilities reside
 #
-utility_hosts:
+rhel_vm_hosts:
   hosts:
     utility.acanorex.io:
       ansible_user: berto
       base_hostname: utility
+
+centos_vm_hosts:
+  hosts:
+    pihole.acanorex.io:
+      ansible_user: root
+      base_hostname: pihole
 
 
 # Red Hat OpenStack Platform Director 

@@ -57,7 +57,7 @@
     - vars/vaulted/vaulted-vars.yml
 
 - name: Configuring base RHEL utility host
-  hosts: utility_hosts
+  hosts: rhel_vm_hosts
   become: True
   roles:
     - role: host-setup-common
@@ -78,3 +78,27 @@
     reboot_after_updates: false
   vars_files:
     - vars/vaulted/vaulted-vars.yml
+
+- name: Configuring base Centos hosts
+  hosts: centos_vm_hosts
+  become: True
+  roles:
+    - role: host-setup-common
+  vars:
+    domain: acanorex.io
+    rhel_pkgs_to_remove:
+      - cloud-init
+    rhel_pkgs_to_install:
+      - NetworkManager
+      - bind-utils
+      - yum-utils
+      - tmux
+      - vim-enhanced
+      - git
+    reboot_after_updates: false
+  vars_files:
+    - vars/vaulted/vaulted-vars.yml
+
+
+
+
